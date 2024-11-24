@@ -28,7 +28,7 @@ public class UsuarioExterno extends Usuario{
     private Integer id;
     
     @Column(unique = true, nullable = false)
-    private Integer cuil;
+    private String cuil;
     
     private String descripcion;
     private String destacado;

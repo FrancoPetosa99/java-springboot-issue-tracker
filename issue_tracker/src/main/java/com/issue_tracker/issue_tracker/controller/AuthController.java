@@ -1,8 +1,13 @@
 package com.issue_tracker.issue_tracker.controller;
 
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,13 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.issue_tracker.issue_tracker.dto.NewUsuarioExternoRequestDTO;
+import com.issue_tracker.issue_tracker.exception.CustomException;
+import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 import com.issue_tracker.issue_tracker.repository.UsuarioExternoRepository;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.service.UsuarioExternoService;
 
 import jakarta.persistence.EntityManager;
-
+import jakarta.validation.Valid;;
 
 @RestController
 @RequestMapping("/api/")
@@ -48,60 +56,61 @@ public class AuthController {
                 .body(response);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<HttpBodyResponse> register(@RequestBody RegistrationRequest request) {
-        try {
-            // Validate request
-            if (request.getEmail() == null || request.getPassword() == null) {
-                return ResponseEntity
-                    .status(400)
-                    .body(new HttpBodyResponse.Builder()
-                        .status("Error")
-                        .statusCode(400)
-                        .message("Email and password are required")
-                        .build());
-            }
 
-            // Check if user exists
-            if (usuarioExternoRepository.findByEmail(request.getEmail()).isPresent()) {
-                return ResponseEntity
-                    .status(409)
-                    .body(new HttpBodyResponse.Builder()
-                        .status("Error")
-                        .statusCode(409)
-                        .message("Email already registered")
-                        .build());
-            }
-
-            // Create new user
-            UsuarioExterno newUser = new UsuarioExterno();
-            newUser.setEmail(request.getEmail());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword())); // Remember to inject PasswordEncoder
-            newUser.setNombre(request.getNombre());
-            newUser.setApellido(request.getApellido());
-            
-            usuarioExternoRepository.save(newUser);
-
-            return ResponseEntity
-                .status(201)
-                .body(new HttpBodyResponse.Builder()
-                    .status("Success")
-                    .statusCode(201)
-                    .message("User registered successfully")
-                    .data(newUser)
-                    .build());
-
-        } catch (Exception e) {
-            return ResponseEntity
-                .status(500)
-                .body(new HttpBodyResponse.Builder()
-                    .status("Error")
-                    .statusCode(500)
-                    .message("Registration failed: " + e.getMessage())
-                    .build());
-        }
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<HttpBodyResponse> createNewUsuarioExterno(
+        @RequestBody @Valid NewUsuarioExternoRequestDTO usuarioExternoRequestDTO
+    ) throws IOException {
+
+    
+        if (usuarioExternoRepository.findByUsuarioEmail(usuarioExternoRequestDTO.getEmail()).isPresent()) {
+            throw new CustomException("Email already registered");
+        }
+        
+        if (usuarioExternoRepository.findByCuil(usuarioExternoRequestDTO.getCuil()).isPresent()) {
+            throw new CustomException("CUIL already registered");
+        }
+
+        // 2. Create new Usuario
+        Usuario usuario = new Usuario();
+        usuario.setNombre(usuarioExternoRequestDTO.getNombre());
+        usuario.setApellido(usuarioExternoRequestDTO.getApellido());
+        usuario.setEmail(usuarioExternoRequestDTO.getEmail());
+        usuario.setNombreUsuario(usuarioExternoRequestDTO.getNombreUsuario());
+        usuario.setHashedPassword(hashPassword(usuarioExternoRequestDTO.getPassword())); // Implement password hashing
+        usuario.setTipo("EXTERNO");
+        usuario.setCreatedAt(LocalDateTime.now());
+        usuario.setUpdatedAt(LocalDateTime.now());
+
+        // 3. Create new UsuarioExterno
+        UsuarioExterno usuarioExterno = new UsuarioExterno();
+        usuarioExterno.setUsuario(usuario);
+        usuarioExterno.setCuil(usuarioExternoRequestDTO.getCuil());
+        usuarioExterno.setDescripcion(usuarioExternoRequestDTO.getDescripcion());
+        usuarioExterno.setDestacado(usuarioExternoRequestDTO.getDestacado());
+        usuarioExterno.setEmpresa(usuarioExternoRequestDTO.getEmpresa());
+        usuarioExterno.setCreatedAt(LocalDateTime.now());
+        usuarioExterno.setUpdatedAt(LocalDateTime.now());
+
+        // 4. Save to database
+        usuarioExternoRepository.save(usuarioExterno);
+
+        // 5. Build response
+        HttpBodyResponse response = new HttpBodyResponse
+                .Builder()
+                .status("Success")
+                .statusCode(HttpStatus.CREATED.value())
+                .message("User registered successfully: " + usuarioExternoRequestDTO.getNombre())
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
     
 
 }
