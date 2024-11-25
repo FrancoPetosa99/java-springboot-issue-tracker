@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class JwtToken {
 
-    private static final String SECRET_KEY = "Desarrollo_Software_2024";
+    private static final String SECRET_KEY = "LeoAndJaviMyFavoriteTeachers";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 horas    
 
     public static Builder generateToken() {

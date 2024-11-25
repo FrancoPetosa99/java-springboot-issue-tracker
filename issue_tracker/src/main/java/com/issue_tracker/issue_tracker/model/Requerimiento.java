@@ -1,6 +1,10 @@
 package com.issue_tracker.issue_tracker.model;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +19,7 @@ import lombok.Data;
 @Table(name = "requerimientos")
 @Data
 public class Requerimiento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,11 +29,18 @@ public class Requerimiento {
     
     @Column(columnDefinition = "TEXT")
     private String descripcion;
+
+    @Column(columnDefinition = "TEXT")
+    private String asunto;
     
     @Column(length = 50)
     private String prioridad;
     
+    @Column(length = 50)
+    private String estado;
+    
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "tipo_requerimiento_id")
     private TipoRequerimiento tipoRequerimiento;
     
@@ -41,6 +53,7 @@ public class Requerimiento {
     private Usuario usuarioPropietario;
     
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "usuario_emisor_id")
     private Usuario usuarioEmisor;
     

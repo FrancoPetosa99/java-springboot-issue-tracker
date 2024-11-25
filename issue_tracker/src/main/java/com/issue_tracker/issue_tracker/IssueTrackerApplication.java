@@ -3,7 +3,6 @@ package com.issue_tracker.issue_tracker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 @SpringBootApplication
 public class IssueTrackerApplication {
 
@@ -11,5 +10,3 @@ public class IssueTrackerApplication {
         SpringApplication.run(IssueTrackerApplication.class, args);
     }
 }
-
-

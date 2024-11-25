@@ -14,14 +14,14 @@ public class UsuarioExternoService {
         this.repository = repository;
     }
     
-    public UsuarioExterno findByEmail(String email) {
-        return repository.findByUsuarioEmail(email)
-            .orElseThrow(() -> new CustomException("Usuario not found with email: " + email));
-    }
+    // public UsuarioExterno findByEmail(String email) {
+    //     return repository.findByUsuarioEmail(email)
+    //         .orElseThrow(() -> new CustomException("Usuario not found with email: " + email));
+    // }
 
-    public UsuarioExterno findByCuil(String cuil) {
-        return repository.findByCuil(cuil)
-            .orElseThrow(() -> new CustomException("Usuario not found with CUIL: " + cuil));
-    }
+    // public UsuarioExterno findByCuil(String cuil) {
+    //     return repository.findByCuil(cuil)
+    //         .orElseThrow(() -> new CustomException("Usuario not found with CUIL: " + cuil));
+    // }
 
 }

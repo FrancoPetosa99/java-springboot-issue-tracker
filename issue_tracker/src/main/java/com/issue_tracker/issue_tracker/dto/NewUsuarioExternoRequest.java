@@ -1,32 +1,22 @@
 package com.issue_tracker.issue_tracker.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class NewUsuarioExternoRequestDTO {
-    @NotNull
+@NoArgsConstructor // Constructor sin parámetros
+@AllArgsConstructor // Constructor con todos los parámetros
+public class NewUsuarioExternoRequest {
     private String nombre;
-    
-    @NotNull
     private String apellido;
-    
-    @NotNull
-    @Email
     private String email;
-    
-    @NotNull
     private String nombreUsuario;
-    
-    @NotNull
     private String password;
-    
-    @NotNull
+    private String confirmPassword;
     private String cuil;
-    
     private String descripcion;
     private String destacado;
     private String empresa;

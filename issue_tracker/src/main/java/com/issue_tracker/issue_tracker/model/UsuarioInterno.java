@@ -9,17 +9,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@DiscriminatorValue("externo")
+@DiscriminatorValue("interno")
 @Getter
 @Setter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class UsuarioExterno extends Usuario {
+public class UsuarioInterno extends Usuario {
 
-    @Column(unique = true, nullable = false, length = 11)
-    private String cuil;
+    @Column(unique = true)
+    private Integer legajo;
 
-    private String descripcion;
-    private String destacado;
-    private String empresa;
+    private Integer cargoId;
+    private Integer departamentoId;
 }
