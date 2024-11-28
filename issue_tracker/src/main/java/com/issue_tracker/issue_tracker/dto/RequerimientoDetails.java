@@ -3,12 +3,10 @@ package com.issue_tracker.issue_tracker.dto;
 import java.time.LocalDateTime;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor // Constructor sin parámetros
 @AllArgsConstructor // Constructor con todos los parámetros
 public class RequerimientoDetails {

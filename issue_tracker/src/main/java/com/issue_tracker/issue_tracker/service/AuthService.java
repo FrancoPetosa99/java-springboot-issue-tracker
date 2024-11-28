@@ -3,7 +3,6 @@ package com.issue_tracker.issue_tracker.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-
 import com.issue_tracker.issue_tracker.jwt.JwtToken;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;

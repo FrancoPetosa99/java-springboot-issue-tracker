@@ -1,6 +1,5 @@
 package com.issue_tracker.issue_tracker.response;
 
-
 public class HttpBodyResponse {
 
     private String status;

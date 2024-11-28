@@ -1,6 +1,6 @@
 package com.issue_tracker.issue_tracker.model;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

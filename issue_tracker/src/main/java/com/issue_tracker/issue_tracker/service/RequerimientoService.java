@@ -7,13 +7,10 @@ import org.springframework.stereotype.Service;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
-import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;
-import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 import com.issue_tracker.issue_tracker.repository.TipoRequerimientoRepository;
 import com.issue_tracker.issue_tracker.repository.UsuarioExternoRepository;
-import com.issue_tracker.issue_tracker.repository.UsuarioInternoRepository;
 
 @Service
 public class RequerimientoService {

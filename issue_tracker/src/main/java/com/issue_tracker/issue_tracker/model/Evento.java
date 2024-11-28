@@ -16,10 +16,12 @@ import lombok.Data;
 @Table(name = "eventos")
 @Data
 public class Evento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    @Column(name = "accion")
     private String accion;
     
     @ManyToOne

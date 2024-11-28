@@ -1,4 +1,5 @@
 package  com.issue_tracker.issue_tracker.jwt;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
@@ -6,7 +7,6 @@ import io.jsonwebtoken.JwtException;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
-
 
 public class JwtToken {
 
