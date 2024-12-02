@@ -6,34 +6,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "eventos")
 @Data
-public class Evento {
+public class Empresa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
-    @Column(name = "accion")
-    private String accion;
-    
-    @ManyToOne
-    @JoinColumn(name = "requerimiento_id")
-    private Requerimiento requerimiento;
-    
-    @ManyToOne
-    @JoinColumn(name = "emisor_usuario_id")
-    private Usuario emisorUsuario;
-    
-    @Column(name = "created_at")
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @Column(name = "deleted_at", updatable = false)
+    private LocalDateTime deletedAt;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

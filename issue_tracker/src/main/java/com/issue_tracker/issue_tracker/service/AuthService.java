@@ -7,45 +7,60 @@ import com.issue_tracker.issue_tracker.jwt.JwtToken;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 import com.issue_tracker.issue_tracker.repository.UsuarioExternoRepository;
+import com.issue_tracker.issue_tracker.repository.UsuarioRepository;
 
 @Service
 public class AuthService {
 
     @Autowired
-    private UsuarioExternoRepository userRepository;
+    private UsuarioRepository usuarioRepository;
 
-    public UsuarioExterno registerNewUser(UsuarioExterno usuario) {
+    @Autowired
+    private UsuarioExternoRepository usuarioExternoRepository;
+
+    public UsuarioExterno registerNewExternalUser(UsuarioExterno usuario) {
         
-        // verify does not exist another user with same email
-        Usuario existEmail = userRepository.findByEmail(usuario.getEmail());
-        if (existEmail != null) return null;
+        UsuarioExterno existEmail = usuarioExternoRepository.findByEmail(usuario.getEmail());
+        if (existEmail != null) {
+            // TODO
+            // agregar logica para devolver error
+            return null;
+        }
 
-        // verify does not exist another user with same CUIL
-        Usuario existCUIL = userRepository.findByCuil(usuario.getCuil());
-        if (existCUIL != null) return null;
+        UsuarioExterno existCUIL = usuarioExternoRepository.findByCuil(usuario.getCuil());
+        if (existCUIL != null) {
+            // TODO
+            // agregar logica para devolver error
+            return null;
+        }
 
-        userRepository.save(usuario);
+        usuarioExternoRepository.save(usuario);
         return usuario;
     }
     
     public String login(String email, String password) {
 
-        // check if user with passed in email exists
-        Usuario user = userRepository.findByEmail(email);
-        if (user == null) return null;
+        Usuario user = usuarioRepository.findByEmail(email);
+        if (user == null) {
+            // TODO
+            // agregar logica para devolver un error
+            return null;
+        }
 
         String storedPasssword = user.getHashedPassword();
-        // String paramPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        // check if passwords are matching
-        if (!BCrypt.checkpw(password, storedPasssword)) return null;
+        if (!BCrypt.checkpw(password, storedPasssword)) {
+            // TODO
+            // agregar logica para devolver error
+            return null;
+        }
 
-        // create new jwt token
         String token = JwtToken
         .generateToken()
         .addClaim("email", user.getEmail())
         .addClaim("nombre", user.getNombre())
         .addClaim("apellido", user.getApellido())
+        .addClaim("tipo", user.getTipo())
         .addClaim("id", user.getId())
         .setSubject(user.getEmail())
         .setTimeHours(200) // establecer tiempo de expiración del token

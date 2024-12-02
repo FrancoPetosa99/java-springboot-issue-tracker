@@ -14,7 +14,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class UsuarioInterno extends Usuario {
 
-    @Column(unique = true)
+    @Column(name = "legajo", unique = true)
     private Integer legajo;
 
     @Column(name = "cargo_id", nullable = false)

@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor // Constructor sin parámetros
-@AllArgsConstructor // Constructor con todos los parámetros
+@NoArgsConstructor
+@AllArgsConstructor
 public class NewUsuarioExternoRequest {
     private String nombre;
     private String apellido;
@@ -16,6 +16,6 @@ public class NewUsuarioExternoRequest {
     private String confirmPassword;
     private String cuil;
     private String descripcion;
-    private String destacado;
+    private Boolean destacadado;
     private String empresa;
 }

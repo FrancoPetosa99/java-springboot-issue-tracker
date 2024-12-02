@@ -7,8 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor // Constructor sin parámetros
-@AllArgsConstructor // Constructor con todos los parámetros
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequerimientoDetails {
     private Integer id;
     private String codigo;

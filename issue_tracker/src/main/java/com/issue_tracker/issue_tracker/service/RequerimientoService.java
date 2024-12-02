@@ -1,16 +1,15 @@
 package com.issue_tracker.issue_tracker.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
-import com.issue_tracker.issue_tracker.model.UsuarioExterno;
+import com.issue_tracker.issue_tracker.repository.RequerimientoCodigoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 import com.issue_tracker.issue_tracker.repository.TipoRequerimientoRepository;
-import com.issue_tracker.issue_tracker.repository.UsuarioExternoRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class RequerimientoService {
@@ -22,46 +21,46 @@ public class RequerimientoService {
     private TipoRequerimientoRepository tipoRequerimientoRepository;
 
     @Autowired
-    private UsuarioExternoRepository usuarioExternoRepository;
-    
-    public Requerimiento createNewRequerimiento(
-        NewRequerimientoRequest newRequerimientoRequest,
-        Integer usuarioEmisorId
-        ) {
-        
-        Requerimiento requerimiento = new Requerimiento();
-        
-        // check if requirement type does exist
-        Integer tipoRequerimientoId = newRequerimientoRequest.getTipoRequerimientoId();
-        TipoRequerimiento tipoRequerimiento = tipoRequerimientoRepository.findById(tipoRequerimientoId).orElse(null);
-        requerimiento.setTipoRequerimiento(tipoRequerimiento);
-        
-        // check if user does exist
-        UsuarioExterno usuarioEmisor = usuarioExternoRepository.findById(usuarioEmisorId).orElse(null);
-        if (usuarioEmisor == null) return null;
-        requerimiento.setUsuarioEmisor(usuarioEmisor);
+    private RequerimientoCodigoRepository requerimientoCodigoRepository;
+  
+    @Transactional
+    public Requerimiento createNewRequerimiento(NewRequerimientoData data) {
 
-        // assign code to requirement
-        Long requerimentNumber = requerimientoRepository.count() + 1;
-        Integer digits = String.valueOf(Math.abs(requerimentNumber)).length();
-        String secuence = "";
-        for (int i = 0; i < 10 - digits; i++) {
-            secuence = secuence + "0";
+        Requerimiento.Builder builder = new Requerimiento.Builder();
+        
+        builder.setAsunto(data.getAsunto());
+        builder.setDescripcion(data.getDescripcion());
+        builder.setPrioridad(data.getPrioridad());
+        builder.setUsuarioEmisor(data.getUsuarioEmisor());
+        
+        String tipoUsuario = data.getTipoUsuario();
+        if (tipoUsuario == "interno") {
+            builder.setUsuarioPropietario(data.getUsuarioPropietario());
         }
-        secuence = secuence + requerimentNumber;
-        String code = tipoRequerimiento.getCodigo() + "-" + LocalDateTime.now().getYear() + "-" + secuence;
-        requerimiento.setCodigo(code);
+             
+        // Long requerimentNumber = requerimientoRepository.count() + 1;
+        TipoRequerimiento tipoRequerimiento = data.getTipoRequerimiento();
+        Integer requerimentNumber = requerimientoCodigoRepository.getCodigo(tipoRequerimiento.getCodigo(), 2024);
+        builder.setCodigo(tipoRequerimiento, requerimentNumber);
 
-        requerimiento.setDescripcion(newRequerimientoRequest.getDescripcion());
-        requerimiento.setPrioridad(newRequerimientoRequest.getPrioridad());
-        requerimiento.setAsunto(newRequerimientoRequest.getAsunto());
-        requerimiento.setEstado(newRequerimientoRequest.getEstado());
-        requerimiento.setCreatedAt(LocalDateTime.now());
-        requerimiento.setUpdatedAt(LocalDateTime.now());
+        Requerimiento requerimiento = builder.build();
 
         requerimientoRepository.save(requerimiento);
 
         return requerimiento;
+    }
+
+    public TipoRequerimiento getTipoRequerimientoById(Integer tipoRequerimientoId) {
+
+        TipoRequerimiento tipoRequerimiento = tipoRequerimientoRepository.findById(tipoRequerimientoId).orElse(null);
+
+        if(tipoRequerimiento == null) {
+            // TODO
+            // agregar logica para devolver un error
+            return null;
+        }
+
+        return tipoRequerimiento;
     }
 
     public List<Requerimiento> getRequerimientoByUsuarioEmisorId(Integer userId) {

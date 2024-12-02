@@ -45,9 +45,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<HttpBodyResponse> createNewUsuarioExterno(
-        @RequestBody NewUsuarioExternoRequest usuarioExternoRequest) {
+        @RequestBody NewUsuarioExternoRequest usuarioExternoRequest
+    ) {
 
-        // create new Usuario
         UsuarioExterno usuario = new UsuarioExterno();
         usuario.setNombre(usuarioExternoRequest.getNombre());
         usuario.setApellido(usuarioExternoRequest.getApellido());
@@ -55,14 +55,14 @@ public class AuthController {
         usuario.setNombreUsuario(usuarioExternoRequest.getNombreUsuario());
         usuario.setHashedPassword(hashPassword(usuarioExternoRequest.getPassword()));
         usuario.setCuil(usuarioExternoRequest.getCuil());
-        usuario.setEmpresa(usuarioExternoRequest.getEmpresa());
+        // usuario.setEmpresa(usuarioExternoRequest.getEmpresa());
         usuario.setDescripcion(usuarioExternoRequest.getDescripcion());
-        usuario.setDestacado(usuarioExternoRequest.getDestacado());
+        usuario.setDestacado(usuarioExternoRequest.getDestacadado());
         usuario.setCreatedAt(LocalDateTime.now());
         usuario.setUpdatedAt(LocalDateTime.now());
 
         // register new user
-        UsuarioExterno nuevoUsuario = authService.registerNewUser(usuario);
+        UsuarioExterno nuevoUsuario = authService.registerNewExternalUser(usuario);
 
         // build response
         HttpBodyResponse response = new HttpBodyResponse
@@ -80,22 +80,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<HttpBodyResponse> login(
-        @RequestBody LoginRequest credentials) {
+        @RequestBody LoginRequest credentials
+    ) {
         
         String email = credentials.getEmail();
         String password = credentials.getPassword();
+        
         String authToken = authService.login(email, password);
         
-        // build response
         HttpBodyResponse response = new HttpBodyResponse
         .Builder()
         .status("Success")
         .statusCode(200)
-        .message("User logged in successfully")
+        .message("Usuario autenticado con exito")
         .data(authToken)
         .build();
 
-        // return response to client
         return ResponseEntity
         .status(200)
         .body(response);
