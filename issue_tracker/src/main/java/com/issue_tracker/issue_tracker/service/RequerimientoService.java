@@ -1,11 +1,17 @@
 package com.issue_tracker.issue_tracker.service;
 
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.issue_tracker.issue_tracker.dto.NewRequerimientoData;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
+import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
+import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.repository.RequerimientoCodigoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 import com.issue_tracker.issue_tracker.repository.TipoRequerimientoRepository;
@@ -25,23 +31,40 @@ public class RequerimientoService {
   
     @Transactional
     public Requerimiento createNewRequerimiento(NewRequerimientoData data) {
-
-        Requerimiento.Builder builder = new Requerimiento.Builder();
         
-        builder.setAsunto(data.getAsunto());
-        builder.setDescripcion(data.getDescripcion());
-        builder.setPrioridad(data.getPrioridad());
-        builder.setUsuarioEmisor(data.getUsuarioEmisor());
-        
-        String tipoUsuario = data.getTipoUsuario();
-        if (tipoUsuario == "interno") {
-            builder.setUsuarioPropietario(data.getUsuarioPropietario());
+        List<ArchivoAdjuntoData> archivosAdjuntosData = data.getListaArchivos();
+        Integer cantidad = archivosAdjuntosData.size();
+        if (cantidad > 5) {
+            // TODO
+            // agregar logica para devolver un error
+            return null;
         }
-             
-        // Long requerimentNumber = requerimientoRepository.count() + 1;
+        
+        List<ArchivoAdjunto> archivosAdjuntos = archivosAdjuntosData
+        .stream()
+        .map(archivoData -> {
+            return this.createArchivoAdjunto(archivoData);
+        })
+        .collect(Collectors.toList());    
+    
         TipoRequerimiento tipoRequerimiento = data.getTipoRequerimiento();
-        Integer requerimentNumber = requerimientoCodigoRepository.getCodigo(tipoRequerimiento.getCodigo(), 2024);
-        builder.setCodigo(tipoRequerimiento, requerimentNumber);
+        int currentYear = Year.now().getValue();
+        String codigo = tipoRequerimiento.getCodigo();
+        Integer requerimentNumber = requerimientoCodigoRepository.getCodigo(codigo, currentYear);
+        
+        Requerimiento.Builder builder = new Requerimiento.Builder();
+
+        String tipoUsuario = data.getTipoUsuario();
+        Usuario propietario = data.getUsuarioPropietario();
+        if (tipoUsuario == "interno" && propietario != null) builder.setUsuarioPropietario(propietario);
+        
+        builder
+        .setAsunto(data.getAsunto())
+        .setDescripcion(data.getDescripcion())
+        .setPrioridad(data.getPrioridad())
+        .setUsuarioEmisor(data.getUsuarioEmisor())
+        .setArchivosAdjuntos(archivosAdjuntos)
+        .setCodigo(tipoRequerimiento, requerimentNumber);
 
         Requerimiento requerimiento = builder.build();
 
@@ -66,5 +89,38 @@ public class RequerimientoService {
     public List<Requerimiento> getRequerimientoByUsuarioEmisorId(Integer userId) {
         List<Requerimiento> requerimientos = requerimientoRepository.findByUsuarioEmisorId(userId);
         return requerimientos;
+    }
+
+    public Requerimiento getRequerimientoById(Integer requerimientoId) {
+        Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
+        if (requerimiento == null) {
+            // TODO
+            // agregar logica para devolver un error si no existe el requerimiento
+        }
+        return requerimiento;
+    }
+
+    private ArchivoAdjunto createArchivoAdjunto(ArchivoAdjuntoData data) {
+
+        String extension = data.getExtension();
+        if (
+            !extension.equalsIgnoreCase("word") &&
+            !extension.equalsIgnoreCase("excel") &&
+            !extension.equalsIgnoreCase("pdf")
+        ) {
+            // TODO
+            // agregar logica para devolver un error
+            return null;    
+        }
+        
+        ArchivoAdjunto archivoAdjunto = new ArchivoAdjunto();
+
+        archivoAdjunto.setNombre(data.getNombre());
+        archivoAdjunto.setExtension(data.getExtension());
+        archivoAdjunto.setContenido(data.getContenido());
+        archivoAdjunto.setCreatedAt(LocalDateTime.now());
+        archivoAdjunto.setUpdatedAt(LocalDateTime.now());
+
+        return archivoAdjunto;
     }
 }

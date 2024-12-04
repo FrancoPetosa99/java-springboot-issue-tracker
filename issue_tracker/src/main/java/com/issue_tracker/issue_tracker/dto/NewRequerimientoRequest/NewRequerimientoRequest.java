@@ -1,4 +1,4 @@
-package com.issue_tracker.issue_tracker.dto;
+package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
 import java.util.List;
 import lombok.Data;
@@ -11,6 +11,6 @@ public class NewRequerimientoRequest {
     private int tipoRequerimientoId;
     private int usuarioPropietarioId;
     private int usuarioEmisorId;
-    private List<String> listaArchivos;
+    private List<ArchivoAdjuntoData> listaArchivos;
     private List<Integer> listaRequerimientosId;
 }

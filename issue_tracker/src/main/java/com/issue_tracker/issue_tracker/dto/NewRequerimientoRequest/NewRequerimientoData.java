@@ -1,6 +1,7 @@
-package com.issue_tracker.issue_tracker.dto;
+package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
 import java.util.List;
+
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -16,6 +17,6 @@ public class NewRequerimientoData {
     private TipoRequerimiento tipoRequerimiento;
     private Usuario usuarioEmisor;
     private Usuario usuarioPropietario;
-    private List<String> listaArchivos;
+    private List<ArchivoAdjuntoData> listaArchivos;
     private List<Requerimiento> listaRequerimientos;
 }

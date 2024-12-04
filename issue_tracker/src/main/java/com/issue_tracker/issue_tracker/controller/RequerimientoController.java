@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.issue_tracker.issue_tracker.dto.NewRequerimientoData;
-import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 import com.issue_tracker.issue_tracker.dto.RequerimientoDetails;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoRequest;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoMapper;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.jwt.JwtToken;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
@@ -93,7 +94,7 @@ public class RequerimientoController {
     @PostMapping("/")
     public ResponseEntity<HttpBodyResponse> createNewRequerimiento(
         @RequestHeader(value = "Authorization", required = true) String authToken,
-        @RequestBody NewRequerimientoRequest newRequerimientoRequest
+        @RequestBody NewRequerimientoRequest requestBody
         ) {
 
         try {
@@ -102,29 +103,37 @@ public class RequerimientoController {
             Map<String, Object> payload = JwtToken.getPayload(authToken);
             
             Integer usuarioEmisorId = (Integer) payload.get("id");
-            String tipo = (String) payload.get("tipo");
+            String tipoUsuario = (String) payload.get("tipo");
 
             Usuario emisor = usuarioService.getUsuarioById(usuarioEmisorId);
 
-            Integer tipoRequerimientoId = newRequerimientoRequest.getTipoRequerimientoId();
+            Integer tipoRequerimientoId = requestBody.getTipoRequerimientoId();
             TipoRequerimiento tipoRequerimiento = requerimientoService.getTipoRequerimientoById(tipoRequerimientoId);
         
-            Integer usuarioPropietarioId = newRequerimientoRequest.getUsuarioPropietarioId();
             Usuario propietario = null;
+            Integer usuarioPropietarioId = requestBody.getUsuarioPropietarioId();
             if (usuarioPropietarioId != 0 && usuarioPropietarioId != null) { 
                 propietario = usuarioService.getUsuarioById(usuarioPropietarioId);
             }
-    
-            NewRequerimientoData data = new NewRequerimientoData();
-            data.setAsunto(newRequerimientoRequest.getAsunto());
-            data.setDescripcion(newRequerimientoRequest.getDescripcion());
-            data.setPrioridad(newRequerimientoRequest.getPrioridad());
-            data.setTipoRequerimiento(tipoRequerimiento);
-            data.setUsuarioEmisor(emisor);
-            data.setUsuarioPropietario(propietario);
-            // data.setListaArchivos(null);
-            // data.setListaRequerimientos(null);
-            data.setTipoUsuario(tipo);
+            
+            List<Integer> listaRequerimientosId = requestBody.getListaRequerimientosId();
+            List<Requerimiento> listaRequerimientosRelacionados = null;
+            if (listaRequerimientosId != null) {
+                listaRequerimientosRelacionados = listaRequerimientosId
+                .stream()
+                .map(id -> requerimientoService.getRequerimientoById(id))
+                .collect(Collectors.toList());
+            }
+            
+            RequerimientoMapper mapper = new RequerimientoMapper();
+            NewRequerimientoData data = mapper.mapBodyRequestToData(
+                requestBody, 
+                propietario, 
+                emisor, 
+                tipoRequerimiento,
+                listaRequerimientosRelacionados,
+                tipoUsuario
+            );
             
             Requerimiento requerimiento = requerimientoService.createNewRequerimiento(data);
             

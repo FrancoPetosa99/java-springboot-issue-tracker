@@ -1,22 +1,27 @@
 package com.issue_tracker.issue_tracker.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "requerimientos")
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class Requerimiento {
 
     @Id
@@ -27,16 +32,19 @@ public class Requerimiento {
     private final String codigo;
     
     @Column(name = "descripcion", nullable = false, length = 5000)
-    private final String descripcion;
+    private String descripcion;
 
     @Column(name = "asunto", nullable = false, length = 50)
-    private final String asunto;
+    private String asunto;
     
     @Column(name = "prioridad", nullable = false)
-    private final String prioridad;
+    private String prioridad;
     
-    @Column(name = "estado", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'Abierto'")
+    @Column(name = "estado", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'Abierto'")
     private String estado;
+
+    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY)
+    private List<ArchivoAdjunto> listaArchivos;
     
     @ManyToOne
     @JsonBackReference
@@ -47,6 +55,14 @@ public class Requerimiento {
     @JsonBackReference
     @JoinColumn(name = "usuario_emisor_id")
     private final Usuario usuarioEmisor;
+
+    @ManyToMany
+    @JoinTable(
+        name = "requerimiento_relacionado",
+        joinColumns = @JoinColumn(name = "requerimiento_id"),
+        inverseJoinColumns = @JoinColumn(name = "requerimiento_relacionado_id")
+    )
+    private List<Requerimiento> requerimientosRelacionados;
 
     @ManyToOne
     @JoinColumn(name = "usuario_propietario_id")
@@ -61,17 +77,27 @@ public class Requerimiento {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Builder pattern
+    // constructor protegido para que JPA instanice objetos
+    protected Requerimiento() {
+        this.id = null;
+        this.codigo = null;
+        this.createdAt = null;
+        this.tipoRequerimiento = null;
+        this.usuarioEmisor = null;
+    }
+    
     public static class Builder {
 
         private String codigo;
         private String descripcion;
         private String asunto;
         private String prioridad;
-        private String estado = "Abierto"; // Estado por defecto
+        private String estado = "Abierto";
         private TipoRequerimiento tipoRequerimiento;
         private Usuario usuarioEmisor;
         private Usuario usuarioPropietario;
+        private List<ArchivoAdjunto> archivosAdjuntos;
+        private List<Requerimiento> requerimientosRelacionados;
 
         public Builder() { }
 
@@ -120,28 +146,34 @@ public class Requerimiento {
             return this;
         }
 
+        public Builder setArchivosAdjuntos(List<ArchivoAdjunto> listaArchivos) {
+            this.archivosAdjuntos = listaArchivos;
+            return this;
+        }
+
+        public Builder setRequerimientosRelacionados(List<Requerimiento> listaRequerimientos) {
+            this.requerimientosRelacionados = listaRequerimientos;
+            return this;
+        }
+
         public Requerimiento build() {
 
-            // Verificar si los valores obligatorios están establecidos
-            // if (this.codigo == null || this.descripcion == null || this.asunto == null || this.prioridad == null || 
-            //     this.estado == null || this.tipoRequerimiento == null || this.usuarioEmisor == null) {
-            //     throw new IllegalStateException("Faltan valores obligatorios para construir el requerimiento.");
-            // }
-    
             Requerimiento requerimiento = new Requerimiento(
-                this.codigo,
-                this.descripcion,
-                this.asunto,
-                this.prioridad,
-                this.tipoRequerimiento,
-                this.usuarioEmisor,
+                null,
+                codigo,
+                descripcion,
+                asunto,
+                prioridad,
+                estado,
+                archivosAdjuntos,
+                tipoRequerimiento,
+                usuarioEmisor,
+                requerimientosRelacionados,
+                usuarioPropietario,
+                null,
+                LocalDateTime.now(),
                 LocalDateTime.now()
             );
-
-            if (this.usuarioPropietario != null) requerimiento.setUsuarioPropietario(this.usuarioPropietario);
-            
-            requerimiento.setEstado(this.estado);
-            requerimiento.setUpdatedAt(LocalDateTime.now());
 
             return requerimiento;
         }
