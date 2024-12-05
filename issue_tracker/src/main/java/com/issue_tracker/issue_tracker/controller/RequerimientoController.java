@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.dto.RequerimientoDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoRequest;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoMapper;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoResponse;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.jwt.JwtToken;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
@@ -126,6 +127,7 @@ public class RequerimientoController {
             }
             
             RequerimientoMapper mapper = new RequerimientoMapper();
+
             NewRequerimientoData data = mapper.mapBodyRequestToData(
                 requestBody, 
                 propietario, 
@@ -137,12 +139,14 @@ public class RequerimientoController {
             
             Requerimiento requerimiento = requerimientoService.createNewRequerimiento(data);
             
+            RequerimientoResponse bodyResponse = mapper.mapRequerimientoToResonse(requerimiento);
+            
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
             .statusCode(200)
             .message("Se ha creado el requerimiento con exito")
-            .data(requerimiento)
+            .data(bodyResponse)
             .build();
             
             return ResponseEntity

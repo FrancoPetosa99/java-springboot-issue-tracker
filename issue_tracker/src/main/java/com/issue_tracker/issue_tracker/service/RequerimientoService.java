@@ -3,7 +3,6 @@ package com.issue_tracker.issue_tracker.service;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
@@ -40,37 +39,38 @@ public class RequerimientoService {
             return null;
         }
         
-        List<ArchivoAdjunto> archivosAdjuntos = archivosAdjuntosData
-        .stream()
-        .map(archivoData -> {
-            return this.createArchivoAdjunto(archivoData);
-        })
-        .collect(Collectors.toList());    
-    
         TipoRequerimiento tipoRequerimiento = data.getTipoRequerimiento();
         int currentYear = Year.now().getValue();
         String codigo = tipoRequerimiento.getCodigo();
         Integer requerimentNumber = requerimientoCodigoRepository.getCodigo(codigo, currentYear);
         
-        Requerimiento.Builder builder = new Requerimiento.Builder();
-
-        String tipoUsuario = data.getTipoUsuario();
-        Usuario propietario = data.getUsuarioPropietario();
-        if (tipoUsuario == "interno" && propietario != null) builder.setUsuarioPropietario(propietario);
-        
-        builder
+        Requerimiento.Builder builder = new Requerimiento
+        .Builder()
         .setAsunto(data.getAsunto())
         .setDescripcion(data.getDescripcion())
         .setPrioridad(data.getPrioridad())
         .setUsuarioEmisor(data.getUsuarioEmisor())
-        .setArchivosAdjuntos(archivosAdjuntos)
-        .setCodigo(tipoRequerimiento, requerimentNumber);
+        .setCodigo(tipoRequerimiento, requerimentNumber)
+        .setRequerimientosRelacionados(data.getListaRequerimientos());
 
+        String tipoUsuario = data.getTipoUsuario();
+        Usuario propietario = data.getUsuarioPropietario();
+        if ("interno".equals(tipoUsuario)&& propietario != null) {
+            builder
+            .setUsuarioPropietario(propietario)
+            .setEstado("Asignado");
+        }
+        
         Requerimiento requerimiento = builder.build();
 
-        requerimientoRepository.save(requerimiento);
+        archivosAdjuntosData
+        .forEach(archivoData -> {
+            ArchivoAdjunto archivo = this.createArchivoAdjunto(archivoData);
+            requerimiento.addArchivoAdjunto(archivo);
+        });
+        
 
-        return requerimiento;
+        return requerimientoRepository.save(requerimiento);
     }
 
     public TipoRequerimiento getTipoRequerimientoById(Integer tipoRequerimientoId) {

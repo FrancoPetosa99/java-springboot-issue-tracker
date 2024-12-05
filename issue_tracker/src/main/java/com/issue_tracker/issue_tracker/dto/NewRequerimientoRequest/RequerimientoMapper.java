@@ -38,4 +38,16 @@ public class RequerimientoMapper {
         
         return data;
     }
+
+    public RequerimientoResponse mapRequerimientoToResonse(Requerimiento requerimiento) {
+        RequerimientoResponse dto = new RequerimientoResponse();
+        dto.setId(requerimiento.getId());
+        dto.setCodigo(requerimiento.getCodigo());
+        dto.setAsunto(requerimiento.getAsunto());
+        dto.setDescripcion(requerimiento.getDescripcion());
+        dto.setPrioridad(requerimiento.getPrioridad());
+        TipoRequerimiento tipo = requerimiento.getTipoRequerimiento();
+        dto.setTipoRequerimiento(tipo.getCodigo());
+        return dto;
+    }
 }

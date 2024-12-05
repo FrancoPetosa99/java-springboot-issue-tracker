@@ -37,13 +37,13 @@ public class ArchivoAdjunto {
     private String contenido;
 
     @ManyToOne
-    @JoinColumn(name = "requerimiento_id")
+    @JoinColumn(name = "requerimiento_id", nullable = false)
     private Requerimiento requerimiento;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at", updatable = false)

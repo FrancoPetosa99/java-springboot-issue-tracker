@@ -1,8 +1,11 @@
 package com.issue_tracker.issue_tracker.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,7 +29,7 @@ public class Requerimiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private final Integer id;
     
     @Column(name = "codigo", nullable = false)
     private final String codigo;
@@ -43,7 +46,7 @@ public class Requerimiento {
     @Column(name = "estado", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'Abierto'")
     private String estado;
 
-    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ArchivoAdjunto> listaArchivos;
     
     @ManyToOne
@@ -74,16 +77,25 @@ public class Requerimiento {
     @Column(name = "created_at", nullable = false, updatable = false)
     private final LocalDateTime createdAt;
     
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    // constructor protegido para que JPA instanice objetos
+    // constructor protegido para que JPA instancie objetos
     protected Requerimiento() {
         this.id = null;
         this.codigo = null;
         this.createdAt = null;
         this.tipoRequerimiento = null;
         this.usuarioEmisor = null;
+    }
+
+    public void addRequerimiento(Requerimiento requerimiento) {
+        this.requerimientosRelacionados.add(requerimiento);
+    }
+
+    public void addArchivoAdjunto(ArchivoAdjunto archivo) {
+        archivo.setRequerimiento(this);
+        this.listaArchivos.add(archivo);
     }
     
     public static class Builder {
@@ -96,8 +108,8 @@ public class Requerimiento {
         private TipoRequerimiento tipoRequerimiento;
         private Usuario usuarioEmisor;
         private Usuario usuarioPropietario;
-        private List<ArchivoAdjunto> archivosAdjuntos;
-        private List<Requerimiento> requerimientosRelacionados;
+        private List<ArchivoAdjunto> archivosAdjuntos = new ArrayList<>();
+        private List<Requerimiento> requerimientosRelacionados = new ArrayList<>();
 
         public Builder() { }
 
@@ -128,7 +140,6 @@ public class Requerimiento {
 
         public Builder setUsuarioPropietario(Usuario value) {
             this.usuarioPropietario = value;
-            this.estado = "Asignado";
             return this;
         }
 
@@ -153,6 +164,11 @@ public class Requerimiento {
 
         public Builder setRequerimientosRelacionados(List<Requerimiento> listaRequerimientos) {
             this.requerimientosRelacionados = listaRequerimientos;
+            return this;
+        }
+
+        public Builder setEstado(String estado) {
+            this.estado = estado;
             return this;
         }
 
