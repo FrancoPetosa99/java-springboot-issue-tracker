@@ -1,5 +1,6 @@
 package com.issue_tracker.issue_tracker.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,12 +17,17 @@ import com.issue_tracker.issue_tracker.dto.RequerimientoDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoRequest;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoMapper;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoResponse;
+import com.issue_tracker.issue_tracker.exception.BadRequestException;
+import com.issue_tracker.issue_tracker.exception.NotFoundException;
+import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.jwt.JwtToken;
+import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
+import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
 
@@ -33,7 +39,11 @@ public class RequerimientoController {
     @Autowired
     private RequerimientoService requerimientoService;
 
-    @Autowired UsuarioService usuarioService;
+    @Autowired 
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private ResponseFactory responseFactory;
     
     @GetMapping("/")
     public ResponseEntity<HttpBodyResponse> getRequerimientos(
@@ -104,28 +114,32 @@ public class RequerimientoController {
             Map<String, Object> payload = JwtToken.getPayload(authToken);
             
             Integer usuarioEmisorId = (Integer) payload.get("id");
+
+            if (usuarioEmisorId == null) throw new UnauthorizedException();
+
             String tipoUsuario = (String) payload.get("tipo");
 
             Usuario emisor = usuarioService.getUsuarioById(usuarioEmisorId);
 
             Integer tipoRequerimientoId = requestBody.getTipoRequerimientoId();
             TipoRequerimiento tipoRequerimiento = requerimientoService.getTipoRequerimientoById(tipoRequerimientoId);
+
+            Integer categoriaRequerimientoId = requestBody.getCategoriaRequerimientoId();
+            CategoriaRequerimiento categoriaRequerimiento = requerimientoService.getCategoriaRequerimientoById(categoriaRequerimientoId);
         
             Usuario propietario = null;
             Integer usuarioPropietarioId = requestBody.getUsuarioPropietarioId();
             if (usuarioPropietarioId != 0 && usuarioPropietarioId != null) { 
                 propietario = usuarioService.getUsuarioById(usuarioPropietarioId);
             }
-            
+        
+            List<Requerimiento> listaRequerimientosRelacionados = new ArrayList<>();
             List<Integer> listaRequerimientosId = requestBody.getListaRequerimientosId();
-            List<Requerimiento> listaRequerimientosRelacionados = null;
-            if (listaRequerimientosId != null) {
-                listaRequerimientosRelacionados = listaRequerimientosId
-                .stream()
-                .map(id -> requerimientoService.getRequerimientoById(id))
-                .collect(Collectors.toList());
+            for (Integer id : listaRequerimientosId) {
+                Requerimiento requerimiento = requerimientoService.getRequerimientoById(id);
+                listaRequerimientosRelacionados.add(requerimiento);
             }
-            
+                    
             RequerimientoMapper mapper = new RequerimientoMapper();
 
             NewRequerimientoData data = mapper.mapBodyRequestToData(
@@ -133,6 +147,7 @@ public class RequerimientoController {
                 propietario, 
                 emisor, 
                 tipoRequerimiento,
+                categoriaRequerimiento,
                 listaRequerimientosRelacionados,
                 tipoUsuario
             );
@@ -153,17 +168,15 @@ public class RequerimientoController {
             .status(200)
             .body(response);
                 
+        } 
+        catch(BadRequestException e) {
+                return responseFactory.badRequest(e.getMessage());
+        }   catch (UnauthorizedException e) {
+                return responseFactory.unauthorizedError();
+        }   catch (NotFoundException e) {
+                return responseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {
-            HttpBodyResponse errorResponse = new HttpBodyResponse
-            .Builder()
-            .status("Error")
-            .statusCode(500)
-            .message("Ha ocurrido un error: " + e.getMessage())
-            .build();
-
-            return ResponseEntity
-            .status(500)
-            .body(errorResponse);
+                return responseFactory.internalServerError();
         }
     }
 }

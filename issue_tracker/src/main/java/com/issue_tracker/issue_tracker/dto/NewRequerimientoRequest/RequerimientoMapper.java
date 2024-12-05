@@ -3,6 +3,7 @@ package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -14,6 +15,7 @@ public class RequerimientoMapper {
         Usuario propietario,
         Usuario emisor,
         TipoRequerimiento tipoRequerimiento,
+        CategoriaRequerimiento categoriaRequerimiento,
         List<Requerimiento> requerimientosRelacionados,
         String tipoUsuario
     ) {
@@ -24,6 +26,7 @@ public class RequerimientoMapper {
         data.setDescripcion(request.getDescripcion());
         data.setPrioridad(request.getPrioridad());
         data.setTipoRequerimiento(tipoRequerimiento);
+        data.setCategoriaRequerimiento(categoriaRequerimiento);
         data.setUsuarioEmisor(emisor);
         data.setUsuarioPropietario(propietario);
         
@@ -48,6 +51,8 @@ public class RequerimientoMapper {
         dto.setPrioridad(requerimiento.getPrioridad());
         TipoRequerimiento tipo = requerimiento.getTipoRequerimiento();
         dto.setTipoRequerimiento(tipo.getCodigo());
+        CategoriaRequerimiento categoria = requerimiento.getCategoriaRequerimiento();
+        dto.setCategoriaRequerimiento(categoria.getDescripcion());
         return dto;
     }
 }

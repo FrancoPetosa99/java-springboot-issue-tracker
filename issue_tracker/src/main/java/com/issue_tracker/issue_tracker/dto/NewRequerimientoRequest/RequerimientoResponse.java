@@ -10,4 +10,5 @@ public class RequerimientoResponse {
     private String asunto;
     private String prioridad;
     private String  tipoRequerimiento;
+    private String categoriaRequerimiento;
 }

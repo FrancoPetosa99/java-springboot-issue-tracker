@@ -9,6 +9,7 @@ public class NewRequerimientoRequest {
     private String asunto;
     private String prioridad;
     private int tipoRequerimientoId;
+    private int categoriaRequerimientoId;
     private int usuarioPropietarioId;
     private int usuarioEmisorId;
     private List<ArchivoAdjuntoData> listaArchivos;

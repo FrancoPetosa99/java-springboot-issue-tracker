@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,6 +52,11 @@ public class Requerimiento {
     @JsonBackReference
     @JoinColumn(name = "tipo_requerimiento_id")
     private final TipoRequerimiento tipoRequerimiento;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "categoria_requerimiento_id")
+    private final CategoriaRequerimiento categoriaRequerimiento;
     
     @ManyToOne
     @JsonBackReference
@@ -86,6 +90,7 @@ public class Requerimiento {
         this.codigo = null;
         this.createdAt = null;
         this.tipoRequerimiento = null;
+        this.categoriaRequerimiento = null;
         this.usuarioEmisor = null;
     }
 
@@ -106,6 +111,7 @@ public class Requerimiento {
         private String prioridad;
         private String estado = "Abierto";
         private TipoRequerimiento tipoRequerimiento;
+        private CategoriaRequerimiento categoriaRequerimiento;
         private Usuario usuarioEmisor;
         private Usuario usuarioPropietario;
         private List<ArchivoAdjunto> archivosAdjuntos = new ArrayList<>();
@@ -130,6 +136,11 @@ public class Requerimiento {
 
         public Builder setTipoRequerimiento(TipoRequerimiento value) {
             this.tipoRequerimiento = value;
+            return this;
+        }
+
+        public Builder setCategoriaRequerimiento(CategoriaRequerimiento value) {
+            this.categoriaRequerimiento = value;
             return this;
         }
 
@@ -183,6 +194,7 @@ public class Requerimiento {
                 estado,
                 archivosAdjuntos,
                 tipoRequerimiento,
+                categoriaRequerimiento,
                 usuarioEmisor,
                 requerimientosRelacionados,
                 usuarioPropietario,

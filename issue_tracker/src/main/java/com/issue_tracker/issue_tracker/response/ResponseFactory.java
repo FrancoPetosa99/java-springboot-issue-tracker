@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResponseFactory {
     
-    public ResponseEntity<Object> success(HttpBodyResponse data) {
+    public ResponseEntity<HttpBodyResponse> success(HttpBodyResponse data) {
         return ResponseEntity
         .status(data.getStatusCode())
         .body(data);
     }
 
-    public ResponseEntity<Object> badRequest(String message) {
+    public ResponseEntity<HttpBodyResponse> badRequest(String message) {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -27,7 +27,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<Object> errorNotFound(String message) {
+    public ResponseEntity<HttpBodyResponse> errorNotFound(String message) {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -41,7 +41,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<Object> unauthorizedError() {
+    public ResponseEntity<HttpBodyResponse> unauthorizedError() {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -56,7 +56,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<Object> errorForbidden() {
+    public ResponseEntity<HttpBodyResponse> errorForbidden() {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -71,7 +71,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<Object> internalServerError() {
+    public ResponseEntity<HttpBodyResponse> internalServerError() {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
