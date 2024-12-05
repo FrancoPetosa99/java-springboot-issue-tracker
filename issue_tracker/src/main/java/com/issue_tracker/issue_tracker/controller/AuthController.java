@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.dto.LoginRequest;
+import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.BodyResponse;
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoData;
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoRequest;
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioMapper;
@@ -65,15 +66,19 @@ public class AuthController {
             Empresa empresa = empresaService.getEmpresaById(empresaId);
 
             UsuarioMapper mapper = new UsuarioMapper();
+
             UsuarioExternoData data = mapper.mapRequestToData(bodyRequest, empresa);
 
             UsuarioExterno nuevoUsuario = authService.registerNewExternalUser(data);
+
+            BodyResponse bodyResonse = mapper.mapUsuarioExternoToResponse(nuevoUsuario);
 
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
             .statusCode(201)
-            .message("User registered successfully: " + nuevoUsuario.getNombreUsuario())
+            .message("Usuario registeado con exito")
+            .data(bodyResonse)
             .build();
     
             return ResponseEntity

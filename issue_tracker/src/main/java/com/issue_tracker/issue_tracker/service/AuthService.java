@@ -28,11 +28,11 @@ public class AuthService {
 
         String email = data.getEmail();
         UsuarioExterno existEmail = usuarioExternoRepository.findByEmail(email);
-        if (existEmail != null) throw new BadRequestException("Ya existe un usuario registrado estos datos");
+        if (existEmail != null) throw new BadRequestException("Ya existe un usuario registrado con estos datos");
 
         String cuil = data.getCuil();
         UsuarioExterno existCUIL = usuarioExternoRepository.findByCuil(cuil);
-        if (existCUIL != null) throw new BadRequestException("Ya existe un usuario registrado estos datos");
+        if (existCUIL != null) throw new BadRequestException("Ya existe un usuario registrado con estos datos");
 
         String password = data.getPassword();
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -47,12 +47,11 @@ public class AuthService {
         usuario.setCuil(cuil);
         usuario.setEmpresa(data.getEmpresa());
         usuario.setDescripcion(data.getDescripcion());
+        usuario.setDestacado(data.getDestacadado());
         usuario.setCreatedAt(LocalDateTime.now());
         usuario.setUpdatedAt(LocalDateTime.now());
         
-        usuarioExternoRepository.save(usuario);
-
-        return usuario;
+        return usuarioExternoRepository.save(usuario);
     }
     
     public String login(String email, String password) 

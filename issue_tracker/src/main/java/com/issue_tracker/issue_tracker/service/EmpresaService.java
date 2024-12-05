@@ -1,6 +1,9 @@
 package com.issue_tracker.issue_tracker.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
 import org.springframework.stereotype.Service;
 
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
@@ -19,4 +22,9 @@ public class EmpresaService {
         if (empresa == null) throw new NotFoundException("No se ha encontrado empresa con id: " + empresaId);
         return empresa;
     }
+
+    public List<Empresa> getEmpresas() {
+        return empresaRepository.findAllByOrderByNombreAsc();
+    }
+    
 }
