@@ -6,6 +6,7 @@ import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 public class UsuarioMapper {
 
     public UsuarioExternoData mapRequestToData(UsuarioExternoRequest request, Empresa empresa) {
+        
         UsuarioExternoData data = new UsuarioExternoData();
 
         data.setNombre(request.getNombre());
