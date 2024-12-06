@@ -1,7 +1,6 @@
 package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
 import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
