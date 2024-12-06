@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.issue_tracker.issue_tracker.dto.RequerimientoDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoRequest;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoMapper;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoResponse;
+import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.DetalleRequerimiento;
+import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.DetalleRequerimientoMapper;
+import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.ResponsePagination;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
@@ -71,25 +73,20 @@ public class RequerimientoController {
             Pageable pageable = PageRequest.of(page, size, sort);
             Page<Requerimiento> requerimientos = requerimientoService.getRequerimientoByUsuarioEmisorId(loggedInUserId, pageable);
 
-            List<RequerimientoDetails> requerimientosDetailList = requerimientos
+            DetalleRequerimientoMapper mapper = new DetalleRequerimientoMapper();
+
+            List<DetalleRequerimiento> requerimientosDetailList = requerimientos
+            .getContent()
             .stream()
-            .map(requerimiento -> {
-                RequerimientoDetails detail = new RequerimientoDetails();
-                detail.setId(requerimiento.getId());
-                detail.setCodigo(requerimiento.getCodigo());
-                detail.setDescripcion(requerimiento.getDescripcion());
-                detail.setAsunto(requerimiento.getAsunto());
-                detail.setPrioridad(requerimiento.getPrioridad());
-                detail.setEstado(requerimiento.getEstado());
-                detail.setTipoRequerimiento(requerimiento.getTipoRequerimiento().getCodigo());
-                detail.setUsuarioPropietario(requerimiento.getUsuarioPropietario());
-                detail.setDeletedAt(requerimiento.getDeletedAt());
-                detail.setCreatedAt(requerimiento.getCreatedAt());
-                detail.setUpdatedAt(requerimiento.getUpdatedAt());
-                return detail;
-            })
+            .map(requerimiento -> mapper.mapRequerimientoToDetalle(requerimiento))
             .collect(Collectors.toList());
-        
+
+            ResponsePagination pagination = new ResponsePagination();
+            
+            pagination.setListaRequerimientos(requerimientosDetailList);
+            pagination.setPageSize(requerimientos.getSize());
+            pagination.setCurrentPage(requerimientos.getPageable().getPageNumber());
+
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
