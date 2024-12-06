@@ -5,6 +5,9 @@ import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
@@ -99,8 +102,8 @@ public class RequerimientoService {
         return categoriaRequerimiento;
     }
 
-    public List<Requerimiento> getRequerimientoByUsuarioEmisorId(Integer userId) {
-        List<Requerimiento> requerimientos = requerimientoRepository.findByUsuarioEmisorId(userId);
+    public Page<Requerimiento> getRequerimientoByUsuarioEmisorId(Integer userId, Pageable pageable) {
+        Page<Requerimiento> requerimientos = requerimientoRepository.findByUsuarioEmisorId(userId, pageable);
         return requerimientos;
     }
 

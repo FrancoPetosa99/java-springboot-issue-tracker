@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.dto.RequerimientoDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoRequest;
@@ -47,6 +52,10 @@ public class RequerimientoController {
     
     @GetMapping("/")
     public ResponseEntity<HttpBodyResponse> getRequerimientos(
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "10") Integer size,
+        @RequestParam(defaultValue = "DESC") String order,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
         @RequestHeader(value = "Authorization", required = true) String authToken ) {
 
         try {
@@ -55,7 +64,12 @@ public class RequerimientoController {
             Map<String, Object> payload = JwtToken.getPayload(authToken);
             Integer loggedInUserId = (Integer) payload.get("id");
 
-            List<Requerimiento> requerimientos = requerimientoService.getRequerimientoByUsuarioEmisorId(loggedInUserId);
+            Sort sort = order.equalsIgnoreCase("ASC") 
+            ? Sort.by(sortBy).ascending() 
+            : Sort.by(sortBy).descending();
+
+            Pageable pageable = PageRequest.of(page, size, sort);
+            Page<Requerimiento> requerimientos = requerimientoService.getRequerimientoByUsuarioEmisorId(loggedInUserId, pageable);
 
             List<RequerimientoDetails> requerimientosDetailList = requerimientos
             .stream()
