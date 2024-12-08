@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
@@ -102,7 +104,24 @@ public class RequerimientoService {
         return categoriaRequerimiento;
     }
 
-    public Page<Requerimiento> getRequerimientoByUsuarioEmisorId(Integer userId, Pageable pageable) {
+    public Page<Requerimiento> getRequerimientos(Pageable pageable) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
+        String role = currentUser.getRole();
+        
+        if (role.equalsIgnoreCase("INTERNO")) {
+            Integer userId = currentUser.getUserId();
+            Page<Requerimiento> requerimientos = this.getRequerimientoByUsuarioEmisorId(userId, pageable);
+            return requerimientos;
+        }
+
+        Page<Requerimiento> requerimientos = requerimientoRepository.findAll(pageable);
+        return requerimientos;
+    }
+
+    private Page<Requerimiento> getRequerimientoByUsuarioEmisorId(Integer userId, Pageable pageable) {
         Page<Requerimiento> requerimientos = requerimientoRepository.findByUsuarioEmisorId(userId, pageable);
         return requerimientos;
     }

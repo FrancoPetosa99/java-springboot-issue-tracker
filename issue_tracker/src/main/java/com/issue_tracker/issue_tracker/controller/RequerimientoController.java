@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +30,7 @@ import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.Response
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
+import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.jwt.JwtToken;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
@@ -57,21 +61,16 @@ public class RequerimientoController {
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "10") Integer size,
         @RequestParam(defaultValue = "DESC") String order,
-        @RequestParam(defaultValue = "createdAt") String sortBy,
-        @RequestHeader(value = "Authorization", required = true) String authToken ) {
+        @RequestParam(defaultValue = "createdAt") String sortBy) {
 
         try {
             
-            authToken = authToken.substring(7);
-            Map<String, Object> payload = JwtToken.getPayload(authToken);
-            Integer loggedInUserId = (Integer) payload.get("id");
-
             Sort sort = order.equalsIgnoreCase("ASC") 
             ? Sort.by(sortBy).ascending() 
             : Sort.by(sortBy).descending();
 
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<Requerimiento> requerimientos = requerimientoService.getRequerimientoByUsuarioEmisorId(loggedInUserId, pageable);
+            Page<Requerimiento> requerimientos = requerimientoService.getRequerimientos(pageable);
 
             DetalleRequerimientoMapper mapper = new DetalleRequerimientoMapper();
 
@@ -91,7 +90,7 @@ public class RequerimientoController {
             .Builder()
             .status("Success")
             .statusCode(200)
-            .message("Se han encontrado los requerimientos pertenecientes al usuario con id: " + loggedInUserId)
+            .message("Se han encontrado requerimientos")
             .data(requerimientosDetailList)
             .build();
 
@@ -121,16 +120,17 @@ public class RequerimientoController {
 
         try {
             
-            authToken = authToken.substring(7);
-            Map<String, Object> payload = JwtToken.getPayload(authToken);
+            CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getPrincipal();
             
-            Integer usuarioEmisorId = (Integer) payload.get("id");
-
+            Integer usuarioEmisorId = currentUser.getUserId();
+            
             if (usuarioEmisorId == null) throw new UnauthorizedException();
-
-            String tipoUsuario = (String) payload.get("tipo");
-
             Usuario emisor = usuarioService.getUsuarioById(usuarioEmisorId);
+
+            String tipoUsuario = currentUser.getRole();
 
             Integer tipoRequerimientoId = requestBody.getTipoRequerimientoId();
             TipoRequerimiento tipoRequerimiento = requerimientoService.getTipoRequerimientoById(tipoRequerimientoId);

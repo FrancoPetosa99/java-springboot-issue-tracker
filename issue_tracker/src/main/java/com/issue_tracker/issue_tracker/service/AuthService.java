@@ -22,7 +22,7 @@ public class AuthService {
 
     @Autowired
     private UsuarioExternoRepository usuarioExternoRepository;
-
+    
     public UsuarioExterno registerNewExternalUser(UsuarioExternoData data) 
     throws BadRequestException {
 
@@ -69,6 +69,7 @@ public class AuthService {
         .addClaim("nombre", user.getNombre())
         .addClaim("apellido", user.getApellido())
         .addClaim("tipo", user.getTipo())
+        .addClaim("nombreUsuario", user.getNombreUsuario())
         .addClaim("id", user.getId())
         .setSubject(user.getEmail())
         .setTimeHours(200)

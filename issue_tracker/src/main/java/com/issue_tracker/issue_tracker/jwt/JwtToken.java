@@ -37,7 +37,6 @@ public class JwtToken {
         }
     }
 
-    // Clase Builder
     public static class Builder {
 
         private Map<String, Object> claims;
