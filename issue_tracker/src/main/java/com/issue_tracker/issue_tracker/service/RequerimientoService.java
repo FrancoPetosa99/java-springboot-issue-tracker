@@ -150,4 +150,16 @@ public class RequerimientoService {
 
         return archivoAdjunto;
     }
+
+    public void asignarNuevoPropietario(Integer requerimientoId, Usuario nuevoPropietario) 
+    throws Exception {
+
+        Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
+
+        if (requerimiento == null) throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
+
+        requerimiento.asignarNuevoPropietario(nuevoPropietario);
+
+        requerimientoRepository.save(requerimiento);
+    }
 }

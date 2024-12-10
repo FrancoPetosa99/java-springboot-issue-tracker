@@ -2,20 +2,19 @@ package com.issue_tracker.issue_tracker.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,11 +27,11 @@ import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.DetalleR
 import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.DetalleRequerimientoMapper;
 import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.ResponsePagination;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
+import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
-import com.issue_tracker.issue_tracker.jwt.JwtToken;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
@@ -182,6 +181,44 @@ public class RequerimientoController {
         } 
         catch(BadRequestException e) {
                 return responseFactory.badRequest(e.getMessage());
+        }   catch (UnauthorizedException e) {
+                return responseFactory.unauthorizedError();
+        }   catch (NotFoundException e) {
+                return responseFactory.errorNotFound(e.getMessage());
+        } catch (Exception e) {
+                return responseFactory.internalServerError();
+        }
+    }
+
+    @PutMapping("/{requerimientoId}/propietarios/{propietarioId}")
+    public ResponseEntity<HttpBodyResponse> asignarPropietario(
+        @PathVariable Integer requerimientoId,
+        @PathVariable Integer propietarioId
+    ) {
+
+        try {
+            
+            Usuario nuevoUsuarioPropietario = usuarioService.getUsuarioById(propietarioId);
+
+            requerimientoService.asignarNuevoPropietario(requerimientoId, nuevoUsuarioPropietario);
+            
+            HttpBodyResponse response = new HttpBodyResponse
+            .Builder()
+            .status("Success")
+            .statusCode(200)
+            .message("El requerimiento se ha asignado con exito")
+            .data(null)
+            .build();
+            
+            return ResponseEntity
+            .status(200)
+            .body(response);
+                
+        } 
+        catch(BadRequestException e) {
+                return responseFactory.badRequest(e.getMessage());
+        }   catch (ForbiddenException e) {
+                return responseFactory.errorForbidden();
         }   catch (UnauthorizedException e) {
                 return responseFactory.unauthorizedError();
         }   catch (NotFoundException e) {

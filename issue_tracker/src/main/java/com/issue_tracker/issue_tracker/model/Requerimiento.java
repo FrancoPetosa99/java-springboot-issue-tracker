@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.issue_tracker.issue_tracker.model.RequerimientoEstados.RequerimientoState;
+import com.issue_tracker.issue_tracker.model.RequerimientoEstados.StateAbierto;
+import com.issue_tracker.issue_tracker.model.RequerimientoEstados.StateAsignado;
+import com.issue_tracker.issue_tracker.model.RequerimientoEstados.StateCerrado;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +20,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -25,6 +31,23 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Requerimiento {
+
+    @Transient
+    private RequerimientoState stateContext;
+
+    @PostLoad
+    public void initializeStateContext() {
+        String currentState = this.estado;
+        if (currentState.equalsIgnoreCase("ABIERTO")) {
+            this.stateContext = new StateAbierto(this);
+        } else if (currentState.equalsIgnoreCase("ASIGNADO")) {
+            this.stateContext = new StateAsignado(this);
+        } else if (currentState.equalsIgnoreCase("CERRADO")) {
+            this.stateContext = new StateCerrado(this);
+        } else {
+            throw new IllegalArgumentException("Estado no valido: " + currentState);
+        }
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,6 +97,11 @@ public class Requerimiento {
     @ManyToOne
     @JoinColumn(name = "usuario_propietario_id")
     private Usuario usuarioPropietario;
+
+    public void asignarNuevoPropietario(Usuario usuarioPropietario) 
+    throws Exception {
+        this.stateContext.asignarNuevoPropietario(usuarioPropietario);
+    }
     
     @Column(name = "deleted_at", updatable = false)
     private LocalDateTime deletedAt;
@@ -186,6 +214,7 @@ public class Requerimiento {
         public Requerimiento build() {
 
             Requerimiento requerimiento = new Requerimiento(
+                null,
                 null,
                 codigo,
                 descripcion,
