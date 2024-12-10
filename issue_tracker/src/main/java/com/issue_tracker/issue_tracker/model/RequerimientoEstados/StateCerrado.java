@@ -6,9 +6,7 @@ import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 
 public class StateCerrado extends RequerimientoState {
-
-    private final String estado = "Cerrado";
- 
+     
     public StateCerrado(Requerimiento requerimiento) {
         super(requerimiento);
     }

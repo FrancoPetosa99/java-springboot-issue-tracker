@@ -10,9 +10,7 @@ import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 
 public class StateAsignado extends RequerimientoState {
-
-    private final String estado = "Asignado";
-
+    
     public StateAsignado(Requerimiento requerimiento) {
         super(requerimiento);
     }
