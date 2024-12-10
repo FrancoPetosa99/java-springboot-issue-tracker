@@ -71,6 +71,9 @@ public class Requerimiento {
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ArchivoAdjunto> listaArchivos;
     
+    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Comentario> listaComentarios;
+    
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "tipo_requerimiento_id")
@@ -101,6 +104,11 @@ public class Requerimiento {
     public void asignarNuevoPropietario(Usuario usuarioPropietario) 
     throws Exception {
         this.stateContext.asignarNuevoPropietario(usuarioPropietario);
+    }
+
+    public void agregarComentario(Comentario comentario) 
+    throws Exception {
+        this.stateContext.agregarComentario(comentario);
     }
     
     @Column(name = "deleted_at", updatable = false)
@@ -144,6 +152,7 @@ public class Requerimiento {
         private Usuario usuarioPropietario;
         private List<ArchivoAdjunto> archivosAdjuntos = new ArrayList<>();
         private List<Requerimiento> requerimientosRelacionados = new ArrayList<>();
+        private List<Comentario> listaComentarios = new ArrayList<>();
 
         public Builder() { }
 
@@ -216,17 +225,18 @@ public class Requerimiento {
             Requerimiento requerimiento = new Requerimiento(
                 null,
                 null,
-                codigo,
-                descripcion,
-                asunto,
-                prioridad,
-                estado,
-                archivosAdjuntos,
-                tipoRequerimiento,
-                categoriaRequerimiento,
-                usuarioEmisor,
-                requerimientosRelacionados,
-                usuarioPropietario,
+                this.codigo,
+                this.descripcion,
+                this.asunto,
+                this.prioridad,
+                this.estado,
+                this.archivosAdjuntos,
+                this.listaComentarios,
+                this.tipoRequerimiento,
+                this.categoriaRequerimiento,
+                this.usuarioEmisor,
+                this.requerimientosRelacionados,
+                this.usuarioPropietario,
                 null,
                 LocalDateTime.now(),
                 LocalDateTime.now()

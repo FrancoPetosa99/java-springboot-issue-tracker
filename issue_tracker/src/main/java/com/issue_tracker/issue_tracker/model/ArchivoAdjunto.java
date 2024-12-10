@@ -1,6 +1,9 @@
 package com.issue_tracker.issue_tracker.model;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,11 +33,15 @@ public class ArchivoAdjunto {
 
     @Column(name = "extension")
     private String extension;
-
+    
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "contenido_base64", columnDefinition = "LONGTEXT")
     private String contenido;
+    
+    @ManyToOne
+    @JoinColumn(name = "comentario_id")
+    private Comentario comentario;
 
     @ManyToOne
     @JoinColumn(name = "requerimiento_id", nullable = false)

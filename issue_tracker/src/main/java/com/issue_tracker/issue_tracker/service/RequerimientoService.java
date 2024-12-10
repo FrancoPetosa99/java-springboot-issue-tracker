@@ -11,16 +11,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
+import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
+import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.repository.CategoriaRequerimientoRepository;
+import com.issue_tracker.issue_tracker.repository.ComentarioRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoCodigoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 import com.issue_tracker.issue_tracker.repository.TipoRequerimientoRepository;
@@ -42,6 +45,9 @@ public class RequerimientoService {
 
     @Autowired
     private CategoriaRequerimientoRepository categoriaRequerimientoRepository;
+
+    @Autowired
+    private ComentarioRepository comentarioRepository;
   
     @Transactional
     public Requerimiento createNewRequerimiento(NewRequerimientoData data)
@@ -161,5 +167,26 @@ public class RequerimientoService {
         requerimiento.asignarNuevoPropietario(nuevoPropietario);
 
         requerimientoRepository.save(requerimiento);
+    }
+
+    public Comentario crearNuevoComentario(NuevoComentarioData data) 
+    throws Exception {
+
+        Integer requerimientoId = data.getRequerimientoId();
+        Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
+
+        if (requerimiento == null) throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
+
+        Comentario comentario = new Comentario
+        .Builder()
+        .buildAsunto(data.getAsunto())
+        .buildDescripcion(data.getDescripcion())
+        .buildUsuarioEmisor(data.getEmisor())
+        .buildRequerimiento(requerimiento)
+        .build();
+
+        requerimiento.agregarComentario(comentario);
+
+        return comentarioRepository.save(comentario);
     }
 }

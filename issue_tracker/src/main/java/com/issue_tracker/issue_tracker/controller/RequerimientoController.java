@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +30,13 @@ import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
+import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.ComentarioMapper;
+import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NewComentarioRequest;
+import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioBodyResponse;
+import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
+import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -60,7 +64,8 @@ public class RequerimientoController {
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "10") Integer size,
         @RequestParam(defaultValue = "DESC") String order,
-        @RequestParam(defaultValue = "createdAt") String sortBy) {
+        @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
 
         try {
             
@@ -113,9 +118,8 @@ public class RequerimientoController {
 
     @PostMapping("/")
     public ResponseEntity<HttpBodyResponse> createNewRequerimiento(
-        @RequestHeader(value = "Authorization", required = true) String authToken,
         @RequestBody NewRequerimientoRequest requestBody
-        ) {
+    ) {
 
         try {
             
@@ -221,6 +225,52 @@ public class RequerimientoController {
                 return responseFactory.errorForbidden();
         }   catch (UnauthorizedException e) {
                 return responseFactory.unauthorizedError();
+        }   catch (NotFoundException e) {
+                return responseFactory.errorNotFound(e.getMessage());
+        } catch (Exception e) {
+                return responseFactory.internalServerError();
+        }
+    }
+
+    @PostMapping("/{requerimientoId}/comentarios")
+    public ResponseEntity<HttpBodyResponse> agregarNuevoComentario(
+        @PathVariable Integer requerimientoId,
+        @RequestBody NewComentarioRequest requestBody
+    ) {
+
+        try {
+
+            CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getPrincipal();
+
+            Integer emisorId = currentUser.getUserId();
+            Usuario usuarioEmisor = usuarioService.getUsuarioById(emisorId);
+
+            ComentarioMapper mapper = new ComentarioMapper();
+
+            NuevoComentarioData data = mapper.mapRequestToData(requestBody, usuarioEmisor, requerimientoId);
+            
+            Comentario comentario = requerimientoService.crearNuevoComentario(data);
+
+            NuevoComentarioBodyResponse responseData = mapper.mapComentarioToResponse(comentario);
+            
+            HttpBodyResponse response = new HttpBodyResponse
+            .Builder()
+            .status("Success")
+            .statusCode(200)
+            .message("Se ha registrado el comentario con exito")
+            .data(responseData)
+            .build();
+            
+            return ResponseEntity
+            .status(200)
+            .body(response);
+                
+        } 
+        catch(BadRequestException e) {
+                return responseFactory.badRequest(e.getMessage());
         }   catch (NotFoundException e) {
                 return responseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {

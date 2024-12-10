@@ -1,13 +1,14 @@
 package com.issue_tracker.issue_tracker.model.RequerimientoEstados;
 
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
+import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 
 public class StateAbierto extends RequerimientoState {
 
     private final String estado = "Abierto";
-    
+
     public StateAbierto(Requerimiento requerimiento) {
         super(requerimiento);
     }
@@ -16,6 +17,11 @@ public class StateAbierto extends RequerimientoState {
         this.requerimiento.setUsuarioPropietario(nuevoPropietario);
         this.requerimiento.setEstado("Asignado");
         this.requerimiento.setStateContext(new StateAsignado(requerimiento));
+    }
+
+    public void agregarComentario(Comentario comentario) 
+    throws BadRequestException {
+        throw new BadRequestException("No se admiten comentarios hasta que haya un Propietario asignado");
     }
 
     public void cerrarRequerimiento() 

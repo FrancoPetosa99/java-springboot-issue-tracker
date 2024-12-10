@@ -1,11 +1,11 @@
 package com.issue_tracker.issue_tracker.model.RequerimientoEstados;
 
+import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
-import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
+import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 
@@ -28,6 +28,11 @@ public class StateAsignado extends RequerimientoState {
             throw new ForbiddenException("Solo el actual propietario tiene permisos para asignar el requerimiento");
 
         this.requerimiento.setUsuarioPropietario(nuevoPropietario);
+    }
+
+    public void agregarComentario(Comentario comentario) {
+        List<Comentario> comentarios = this.requerimiento.getListaComentarios();
+        comentarios.add(comentario);
     }
 
     public void cerrarRequerimiento()
