@@ -17,7 +17,6 @@ public abstract class RequerimientoState {
     public abstract void cerrarRequerimiento() throws Exception;
     public abstract void agregarComentario(Comentario comentario) throws Exception;
 
-
     public String getEstado(Usuario usuarioPropietario) {
         return this.estado;
     }

@@ -15,6 +15,7 @@ import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentari
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
+import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
@@ -131,7 +132,7 @@ public class RequerimientoService {
         Page<Requerimiento> requerimientos = requerimientoRepository.findByUsuarioEmisorId(userId, pageable);
         return requerimientos;
     }
-
+    
     public Requerimiento getRequerimientoById(Integer requerimientoId) 
     throws NotFoundException {
         Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
@@ -159,6 +160,13 @@ public class RequerimientoService {
 
     public void asignarNuevoPropietario(Integer requerimientoId, Usuario nuevoPropietario) 
     throws Exception {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
+        String role = currentUser.getRole();
+        
+        if (role.equalsIgnoreCase("EXTERNO")) throw new ForbiddenException();
 
         Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
 

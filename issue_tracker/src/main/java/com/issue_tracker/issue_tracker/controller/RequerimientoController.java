@@ -25,18 +25,15 @@ import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.Requerimiento
 import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.DetalleRequerimiento;
 import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.DetalleRequerimientoMapper;
 import com.issue_tracker.issue_tracker.dto.RecuperarListaRequerimientos.ResponsePagination;
+import com.issue_tracker.issue_tracker.dto.VisualizarRequerimiento.VisualizarRequerimiento;
+import com.issue_tracker.issue_tracker.dto.VisualizarRequerimiento.VisualizarRequerimientoMapper;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.ComentarioMapper;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NewComentarioRequest;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioBodyResponse;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
-import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -96,6 +93,45 @@ public class RequerimientoController {
             .statusCode(200)
             .message("Se han encontrado requerimientos")
             .data(requerimientosDetailList)
+            .build();
+
+            return ResponseEntity
+            .status(200)
+            .body(response);
+                
+        } catch (Exception e) {
+            HttpBodyResponse errorResponse = new HttpBodyResponse
+            .Builder()
+            .status("Error")
+            .statusCode(500)
+            .message("Ha ocurrido un error: " + e.getMessage())
+            .build();
+
+            return ResponseEntity
+            .status(500)
+            .body(errorResponse);
+        }
+    }
+
+    @GetMapping("/{requerimientoId}")
+    public ResponseEntity<HttpBodyResponse> visualizarDetalleRequerimiento(
+        @PathVariable Integer requerimientoId
+    ) {
+
+        try {
+
+            Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
+
+            VisualizarRequerimientoMapper mapper = new VisualizarRequerimientoMapper();
+
+            VisualizarRequerimiento data = mapper.mapRequerimientoToDetalle(requerimiento);
+
+            HttpBodyResponse response = new HttpBodyResponse
+            .Builder()
+            .status("Success")
+            .statusCode(200)
+            .message("Se han encontrado requerimiento con id: " + requerimientoId)
+            .data(data)
             .build();
 
             return ResponseEntity
@@ -225,52 +261,6 @@ public class RequerimientoController {
                 return responseFactory.errorForbidden();
         }   catch (UnauthorizedException e) {
                 return responseFactory.unauthorizedError();
-        }   catch (NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
-        } catch (Exception e) {
-                return responseFactory.internalServerError();
-        }
-    }
-
-    @PostMapping("/{requerimientoId}/comentarios")
-    public ResponseEntity<HttpBodyResponse> agregarNuevoComentario(
-        @PathVariable Integer requerimientoId,
-        @RequestBody NewComentarioRequest requestBody
-    ) {
-
-        try {
-
-            CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-
-            Integer emisorId = currentUser.getUserId();
-            Usuario usuarioEmisor = usuarioService.getUsuarioById(emisorId);
-
-            ComentarioMapper mapper = new ComentarioMapper();
-
-            NuevoComentarioData data = mapper.mapRequestToData(requestBody, usuarioEmisor, requerimientoId);
-            
-            Comentario comentario = requerimientoService.crearNuevoComentario(data);
-
-            NuevoComentarioBodyResponse responseData = mapper.mapComentarioToResponse(comentario);
-            
-            HttpBodyResponse response = new HttpBodyResponse
-            .Builder()
-            .status("Success")
-            .statusCode(200)
-            .message("Se ha registrado el comentario con exito")
-            .data(responseData)
-            .build();
-            
-            return ResponseEntity
-            .status(200)
-            .body(response);
-                
-        } 
-        catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
         }   catch (NotFoundException e) {
                 return responseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {

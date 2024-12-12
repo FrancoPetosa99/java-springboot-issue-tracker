@@ -1,9 +1,6 @@
 package com.issue_tracker.issue_tracker.model;
 
 import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,7 +40,7 @@ public class ArchivoAdjunto {
     @JoinColumn(name = "comentario_id")
     private Comentario comentario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requerimiento_id", nullable = false)
     private Requerimiento requerimiento;
 

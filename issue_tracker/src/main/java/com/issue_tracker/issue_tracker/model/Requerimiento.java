@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.issue_tracker.issue_tracker.model.RequerimientoEstados.RequerimientoState;
 import com.issue_tracker.issue_tracker.model.RequerimientoEstados.StateAbierto;
 import com.issue_tracker.issue_tracker.model.RequerimientoEstados.StateAsignado;
@@ -69,6 +70,7 @@ public class Requerimiento {
     private String estado;
 
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<ArchivoAdjunto> listaArchivos;
     
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
