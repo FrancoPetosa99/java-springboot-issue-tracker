@@ -1,4 +1,4 @@
-package com.issue_tracker.issue_tracker.model.RequerimientoEstados;
+package com.issue_tracker.issue_tracker.State.Requerimiento;
 
 import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;

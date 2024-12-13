@@ -10,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoState;
+import com.issue_tracker.issue_tracker.State.Requerimiento.StateFactory;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
@@ -34,6 +37,9 @@ import jakarta.transaction.Transactional;
 public class RequerimientoService {
 
     private static final List<String> EXTENSIONES_VALIDAS = Arrays.asList("word", "excel", "pdf");
+
+    @Autowired 
+    private StateFactory stateFactory;
     
     @Autowired
     private RequerimientoRepository requerimientoRepository;
@@ -172,6 +178,10 @@ public class RequerimientoService {
 
         if (requerimiento == null) throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
 
+        RequerimientoState state = this.stateFactory.getStateContext(requerimiento);
+        
+        requerimiento.setStateContext(state);
+
         requerimiento.asignarNuevoPropietario(nuevoPropietario);
 
         requerimientoRepository.save(requerimiento);
@@ -192,6 +202,10 @@ public class RequerimientoService {
         .buildUsuarioEmisor(data.getEmisor())
         .buildRequerimiento(requerimiento)
         .build();
+
+        RequerimientoState state = this.stateFactory.getStateContext(requerimiento);
+
+        requerimiento.setStateContext(state);
 
         requerimiento.agregarComentario(comentario);
 

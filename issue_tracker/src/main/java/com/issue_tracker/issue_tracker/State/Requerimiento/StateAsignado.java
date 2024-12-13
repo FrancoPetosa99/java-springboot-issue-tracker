@@ -1,6 +1,7 @@
-package com.issue_tracker.issue_tracker.model.RequerimientoEstados;
+package com.issue_tracker.issue_tracker.State.Requerimiento;
 
 import java.util.List;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;

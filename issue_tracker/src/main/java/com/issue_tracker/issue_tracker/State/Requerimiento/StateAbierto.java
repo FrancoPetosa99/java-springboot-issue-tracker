@@ -1,13 +1,13 @@
-package com.issue_tracker.issue_tracker.model.RequerimientoEstados;
+package com.issue_tracker.issue_tracker.State.Requerimiento;
 
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 
-public class StateCerrado extends RequerimientoState {
-     
-    public StateCerrado(Requerimiento requerimiento) {
+public class StateAbierto extends RequerimientoState {
+    
+    public StateAbierto(Requerimiento requerimiento) {
         super(requerimiento);
     }
 
@@ -19,11 +19,11 @@ public class StateCerrado extends RequerimientoState {
 
     public void agregarComentario(Comentario comentario) 
     throws BadRequestException {
-        throw new BadRequestException("No se admiten comentarios una vez cerrado el Requerimiento");
+        throw new BadRequestException("No se admiten comentarios hasta que haya un Propietario asignado");
     }
 
     public void cerrarRequerimiento() 
     throws BadRequestException {
-        throw new BadRequestException("El requerimiento ya se encuentra en estado cerrado");
+        throw new BadRequestException("Primero debe asignarse el requerimiento antes de cerrarse");        
     }
 }
