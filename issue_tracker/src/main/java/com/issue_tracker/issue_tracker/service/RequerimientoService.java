@@ -10,13 +10,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoState;
 import com.issue_tracker.issue_tracker.State.Requerimiento.StateFactory;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
+import com.issue_tracker.issue_tracker.enums.ExtensionesArchivos;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
@@ -35,8 +35,6 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class RequerimientoService {
-
-    private static final List<String> EXTENSIONES_VALIDAS = Arrays.asList("word", "excel", "pdf");
 
     @Autowired 
     private StateFactory stateFactory;
@@ -151,7 +149,11 @@ public class RequerimientoService {
         
         String extension = data.getExtension();
 
-        if (!EXTENSIONES_VALIDAS.contains(extension)) throw new BadRequestException("Extensión de archivo no válida: " + extension);
+        boolean esValida = Arrays
+        .stream(ExtensionesArchivos.values())
+        .anyMatch(ext -> ext.name().equalsIgnoreCase(extension));
+
+        if (esValida) throw new BadRequestException("Extensión de archivo no válida: " + extension);
         
         ArchivoAdjunto archivoAdjunto = new ArchivoAdjunto();
 
