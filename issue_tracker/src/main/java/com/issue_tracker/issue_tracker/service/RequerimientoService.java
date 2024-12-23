@@ -21,6 +21,7 @@ import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.Comentario;
+import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -81,6 +82,15 @@ public class RequerimientoService {
             requerimiento.addArchivoAdjunto(archivo);
         }
         
+        Evento evento = new Evento
+        .Builder()
+        .buildActionTypeAltaRequerimiento()
+        .buildRequerimiento(requerimiento)
+        .buildUsuarioEmisor(propietario)
+        .build();
+
+        requerimiento.addEvento(evento);
+
         return requerimientoRepository.save(requerimiento);
     }
 

@@ -52,6 +52,9 @@ public class Requerimiento {
     
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comentario> listaComentarios;
+
+    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Evento> listaEventos;
     
     @ManyToOne
     @JsonBackReference
@@ -115,6 +118,10 @@ public class Requerimiento {
     public void agregarComentario(Comentario comentario) {
         this.listaComentarios.add(comentario);
     }
+
+    public void addEvento(Evento evento) {
+        this.listaEventos.add(evento);
+    }
     
     public static class Builder {
 
@@ -130,6 +137,7 @@ public class Requerimiento {
         private List<ArchivoAdjunto> archivosAdjuntos = new ArrayList<>();
         private List<Requerimiento> requerimientosRelacionados = new ArrayList<>();
         private List<Comentario> listaComentarios = new ArrayList<>();
+        private List<Evento> listaEventos = new ArrayList<>();
 
         public Builder() { }
 
@@ -197,6 +205,11 @@ public class Requerimiento {
             return this;
         }
 
+        public Builder buildEvento(Evento evento) {
+            this.listaEventos.add(evento);
+            return this;
+        }
+
         public Requerimiento build() {
 
             Requerimiento requerimiento = new Requerimiento(
@@ -208,6 +221,7 @@ public class Requerimiento {
                 this.estado,
                 this.archivosAdjuntos,
                 this.listaComentarios,
+                this.listaEventos,
                 this.tipoRequerimiento,
                 this.categoriaRequerimiento,
                 this.usuarioEmisor,

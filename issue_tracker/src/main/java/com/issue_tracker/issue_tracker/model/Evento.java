@@ -36,4 +36,54 @@ public class Evento {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public static class Builder {
+
+        private String accion;
+        private Requerimiento requerimiento;
+        private Usuario emisorUsuario;
+
+        public Builder buildActionTypeComentario() {
+            this.accion = "Emision de Respuesta";
+            return this;
+        }
+
+        public Builder buildActionTypeAltaRequerimiento() {
+            this.accion = "Alta de Requerimiento";
+            return this;
+        }
+
+        public Builder buildActionTypeAssignacion() {
+            this.accion = "Asignacion de Caso";
+            return this;
+        }
+
+        public Builder buildActionTypeCierreDeCaso() {
+            this.accion = "Asignación de Caso";
+            return this;
+        }
+
+        public Builder buildRequerimiento(Requerimiento requerimiento) {
+            this.requerimiento = requerimiento;
+            return this;
+        }
+
+        public Builder buildUsuarioEmisor(Usuario emisor) {
+            this.emisorUsuario = emisor;
+            return this;
+        }
+
+        public Evento build() {
+
+            Evento evento = new Evento();
+
+            evento.setAccion(this.accion);
+            evento.setRequerimiento(this.requerimiento);
+            evento.setEmisorUsuario(this.emisorUsuario);
+            evento.setCreatedAt(LocalDateTime.now());
+            evento.setUpdatedAt(LocalDateTime.now());
+
+            return evento;
+        } 
+    }
 }
