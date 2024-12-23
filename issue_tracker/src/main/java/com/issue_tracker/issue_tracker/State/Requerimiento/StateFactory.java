@@ -4,18 +4,22 @@ import com.issue_tracker.issue_tracker.model.Requerimiento;
 
 public class StateFactory {
 
-    public RequerimientoState getStateContext(Requerimiento requerimiento) {
+    public RequerimientoState createStateContext(Requerimiento requerimiento) {
 
         String currentState = requerimiento.getEstado();
 
+        RequerimientoState stateContext = null;
+
         if (currentState.equalsIgnoreCase("ABIERTO")) {
-            return new StateAbierto(requerimiento);
+            stateContext = new StateAbierto(requerimiento);
         } else if (currentState.equalsIgnoreCase("ASIGNADO")) {
-            return new StateAsignado(requerimiento);
+            stateContext =  new StateAsignado(requerimiento);
         } else if (currentState.equalsIgnoreCase("CERRADO")) {
-            return new StateCerrado(requerimiento);
+            stateContext =  new StateCerrado(requerimiento);
         } else {
             throw new IllegalArgumentException("Estado no valido: " + currentState);
         }
+         
+        return stateContext;
     }
 }

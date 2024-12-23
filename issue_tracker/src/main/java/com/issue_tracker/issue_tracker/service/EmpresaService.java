@@ -1,11 +1,8 @@
 package com.issue_tracker.issue_tracker.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
 import org.springframework.stereotype.Service;
-
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.Empresa;
 import com.issue_tracker.issue_tracker.repository.EmpresaRepository;
@@ -25,6 +22,5 @@ public class EmpresaService {
 
     public List<Empresa> getEmpresas() {
         return empresaRepository.findAllByOrderByNombreAsc();
-    }
-    
+    } 
 }

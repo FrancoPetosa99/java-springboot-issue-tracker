@@ -45,6 +45,5 @@ public class StateAsignado extends RequerimientoState {
             throw new ForbiddenException("Solo el actual propietario tiene permisos para cerrar el requerimiento");
 
         this.requerimiento.setUsuarioPropietario(null);
-        this.requerimiento.setStateContext(new StateCerrado(requerimiento));
     }
 }

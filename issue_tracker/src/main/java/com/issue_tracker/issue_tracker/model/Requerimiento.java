@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +18,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -28,13 +26,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Requerimiento {
-
-    @Transient
-    private RequerimientoState stateContext;
-
-    public void setStateContext(RequerimientoState stateContext) {
-        this.stateContext = stateContext;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,16 +80,6 @@ public class Requerimiento {
     @JoinColumn(name = "usuario_propietario_id")
     private Usuario usuarioPropietario;
 
-    public void asignarNuevoPropietario(Usuario usuarioPropietario) 
-    throws Exception {
-        this.stateContext.asignarNuevoPropietario(usuarioPropietario);
-    }
-
-    public void agregarComentario(Comentario comentario) 
-    throws Exception {
-        this.stateContext.agregarComentario(comentario);
-    }
-    
     @Column(name = "deleted_at", updatable = false)
     private LocalDateTime deletedAt;
     
@@ -125,6 +106,14 @@ public class Requerimiento {
     public void addArchivoAdjunto(ArchivoAdjunto archivo) {
         archivo.setRequerimiento(this);
         this.listaArchivos.add(archivo);
+    }
+
+    public void asignarNuevoPropietario(Usuario usuarioPropietario) {
+        this.usuarioPropietario = usuarioPropietario;
+    }
+
+    public void agregarComentario(Comentario comentario) {
+        this.listaComentarios.add(comentario);
     }
     
     public static class Builder {
@@ -211,7 +200,6 @@ public class Requerimiento {
         public Requerimiento build() {
 
             Requerimiento requerimiento = new Requerimiento(
-                null,
                 null,
                 this.codigo,
                 this.descripcion,

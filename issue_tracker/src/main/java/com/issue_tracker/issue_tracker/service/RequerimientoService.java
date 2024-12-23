@@ -10,8 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoState;
-import com.issue_tracker.issue_tracker.State.Requerimiento.StateFactory;
+import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoHandler;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
@@ -21,35 +20,23 @@ import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
-import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
-import com.issue_tracker.issue_tracker.repository.CategoriaRequerimientoRepository;
 import com.issue_tracker.issue_tracker.repository.ComentarioRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoCodigoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
-import com.issue_tracker.issue_tracker.repository.TipoRequerimientoRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 public class RequerimientoService {
 
-    @Autowired 
-    private StateFactory stateFactory;
-    
     @Autowired
     private RequerimientoRepository requerimientoRepository;
-
-    @Autowired
-    private TipoRequerimientoRepository tipoRequerimientoRepository;
-
+    
     @Autowired
     private RequerimientoCodigoRepository requerimientoCodigoRepository;
-
-    @Autowired
-    private CategoriaRequerimientoRepository categoriaRequerimientoRepository;
 
     @Autowired
     private ComentarioRepository comentarioRepository;
@@ -60,6 +47,7 @@ public class RequerimientoService {
         
         List<ArchivoAdjuntoData> archivosAdjuntosData = data.getListaArchivos();
         Integer cantidad = archivosAdjuntosData.size();
+
         if (cantidad > 5) throw new BadRequestException("No se pueden adjuntar más de 5 archivos");
         
         TipoRequerimiento tipoRequerimiento = data.getTipoRequerimiento();
@@ -79,6 +67,7 @@ public class RequerimientoService {
 
         String tipoUsuario = data.getTipoUsuario();
         Usuario propietario = data.getUsuarioPropietario();
+
         if ("interno".equals(tipoUsuario) && propietario != null) {
             builder
             .setUsuarioPropietario(propietario)
@@ -95,26 +84,6 @@ public class RequerimientoService {
         return requerimientoRepository.save(requerimiento);
     }
 
-    public TipoRequerimiento getTipoRequerimientoById(Integer tipoRequerimientoId) 
-    throws NotFoundException {
-
-        TipoRequerimiento tipoRequerimiento = tipoRequerimientoRepository.findById(tipoRequerimientoId).orElse(null);
-
-        if(tipoRequerimiento == null) throw new NotFoundException("No se ha encontrado Tipo Requerimiento con id: " + tipoRequerimientoId);
-
-        return tipoRequerimiento;
-    }
-
-    public CategoriaRequerimiento getCategoriaRequerimientoById(Integer categoriaRequerimientoId) 
-    throws NotFoundException {
-
-        CategoriaRequerimiento categoriaRequerimiento = categoriaRequerimientoRepository.findById(categoriaRequerimientoId).orElse(null);
-
-        if(categoriaRequerimiento == null) throw new NotFoundException("No se ha encontrado Categoria Requerimiento con id: " + categoriaRequerimientoId);
-
-        return categoriaRequerimiento;
-    }
-
     public Page<Requerimiento> getRequerimientos(Pageable pageable) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -122,7 +91,7 @@ public class RequerimientoService {
         CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
         String role = currentUser.getRole();
         
-        if (role.equalsIgnoreCase("INTERNO")) {
+        if (role.equalsIgnoreCase("EXTERNO")) {
             Integer userId = currentUser.getUserId();
             Page<Requerimiento> requerimientos = this.getRequerimientoByUsuarioEmisorId(userId, pageable);
             return requerimientos;
@@ -180,11 +149,9 @@ public class RequerimientoService {
 
         if (requerimiento == null) throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
 
-        RequerimientoState state = this.stateFactory.getStateContext(requerimiento);
-        
-        requerimiento.setStateContext(state);
+        RequerimientoHandler handler = new RequerimientoHandler(requerimiento);
 
-        requerimiento.asignarNuevoPropietario(nuevoPropietario);
+        handler.asignarPropietario(nuevoPropietario);
 
         requerimientoRepository.save(requerimiento);
     }
@@ -205,12 +172,20 @@ public class RequerimientoService {
         .buildRequerimiento(requerimiento)
         .build();
 
-        RequerimientoState state = this.stateFactory.getStateContext(requerimiento);
+        RequerimientoHandler handler = new RequerimientoHandler(requerimiento);
 
-        requerimiento.setStateContext(state);
-
-        requerimiento.agregarComentario(comentario);
+        handler.agregarComentario(comentario);
 
         return comentarioRepository.save(comentario);
+    }
+
+    public void cerrarRequerimiento(Requerimiento requerimiento) 
+    throws Exception {
+
+        RequerimientoHandler handler = new RequerimientoHandler(requerimiento);
+
+        handler.cerrarRequerimiento();
+
+        requerimientoRepository.save(requerimiento);
     }
 }

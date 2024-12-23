@@ -14,7 +14,6 @@ public class StateAbierto extends RequerimientoState {
     public void asignarNuevoPropietario(Usuario nuevoPropietario) {
         this.requerimiento.setUsuarioPropietario(nuevoPropietario);
         this.requerimiento.setEstado("Asignado");
-        this.requerimiento.setStateContext(new StateAsignado(requerimiento));
     }
 
     public void agregarComentario(Comentario comentario) 

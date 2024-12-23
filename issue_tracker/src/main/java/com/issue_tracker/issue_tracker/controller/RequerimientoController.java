@@ -39,7 +39,9 @@ import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
+import com.issue_tracker.issue_tracker.service.CategoriaRequerimientoService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
+import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
 
 @RestController
@@ -49,6 +51,12 @@ public class RequerimientoController {
 
     @Autowired
     private RequerimientoService requerimientoService;
+
+    @Autowired
+    private TipoRequerimientoService tipoRequerimientoService;
+
+    @Autowired
+    private CategoriaRequerimientoService categoriaRequerimientoService;
 
     @Autowired 
     private UsuarioService usuarioService;
@@ -172,10 +180,10 @@ public class RequerimientoController {
             String tipoUsuario = currentUser.getRole();
 
             Integer tipoRequerimientoId = requestBody.getTipoRequerimientoId();
-            TipoRequerimiento tipoRequerimiento = requerimientoService.getTipoRequerimientoById(tipoRequerimientoId);
+            TipoRequerimiento tipoRequerimiento = tipoRequerimientoService.getTipoRequerimientoById(tipoRequerimientoId);
 
             Integer categoriaRequerimientoId = requestBody.getCategoriaRequerimientoId();
-            CategoriaRequerimiento categoriaRequerimiento = requerimientoService.getCategoriaRequerimientoById(categoriaRequerimientoId);
+            CategoriaRequerimiento categoriaRequerimiento = categoriaRequerimientoService.getCategoriaRequerimientoById(categoriaRequerimientoId);
         
             Usuario propietario = null;
             Integer usuarioPropietarioId = requestBody.getUsuarioPropietarioId();

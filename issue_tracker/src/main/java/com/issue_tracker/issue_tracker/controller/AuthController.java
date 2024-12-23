@@ -37,7 +37,8 @@ public class AuthController {
     private EmpresaService empresaService;
 
     @GetMapping("/ping")
-    public ResponseEntity<HttpBodyResponse> checkHealth(){
+    public ResponseEntity<HttpBodyResponse> checkHealth() {
+
         HttpBodyResponse response = new HttpBodyResponse
         .Builder()
         .status("Success")
