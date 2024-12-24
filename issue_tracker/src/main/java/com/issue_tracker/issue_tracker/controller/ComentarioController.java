@@ -2,6 +2,7 @@ package com.issue_tracker.issue_tracker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,17 +10,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.issue_tracker.issue_tracker.Builder.Comentario.ComentarioBuilder;
+import com.issue_tracker.issue_tracker.Builder.Evento.BuilderRespuesta;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.ComentarioMapper;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NewComentarioRequest;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioBodyResponse;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.Comentario;
+import com.issue_tracker.issue_tracker.model.Evento;
+import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
+import com.issue_tracker.issue_tracker.service.EventoService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
 
@@ -34,39 +37,51 @@ public class ComentarioController {
     @Autowired 
     private UsuarioService usuarioService;
 
+    @Autowired 
+    private EventoService eventoService;
+
     @Autowired
     private ResponseFactory responseFactory;
 
     @PostMapping("/{requerimientoId}/comentarios")
-    public ResponseEntity<HttpBodyResponse> agregarNuevoComentario(
+    public ResponseEntity<HttpBodyResponse> registrarComentarioEnRequerimiento(
         @PathVariable Integer requerimientoId,
         @RequestBody NewComentarioRequest requestBody
     ) {
 
         try {
 
-            CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+            CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
+          
             Integer emisorId = currentUser.getUserId();
             Usuario usuarioEmisor = usuarioService.getUsuarioById(emisorId);
 
-            ComentarioMapper mapper = new ComentarioMapper();
+            Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
 
-            NuevoComentarioData data = mapper.mapRequestToData(requestBody, usuarioEmisor, requerimientoId);
+            Comentario comentario = new ComentarioBuilder()
+            .buildAsunto(requestBody.getAsunto())
+            .buildDescripcion(requestBody.getDescripcion())
+            .buildUsuarioEmisor(usuarioEmisor)
+            .buildRequerimiento(requerimiento)
+            .build();
             
-            Comentario comentario = requerimientoService.crearNuevoComentario(data);
+            comentario = requerimientoService.registrarComentario(requerimiento, comentario);
 
-            NuevoComentarioBodyResponse responseData = mapper.mapComentarioToResponse(comentario);
-            
+            Evento evento = new BuilderRespuesta()
+            .buildRequerimiento(requerimiento)
+            .buildUsuarioEmisor(usuarioEmisor)
+            .build();
+
+            eventoService.registrarEvento(evento);
+
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
             .statusCode(200)
             .message("Se ha registrado el comentario con exito")
-            .data(responseData)
+            .data(comentario)
             .build();
             
             return ResponseEntity

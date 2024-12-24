@@ -10,17 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.issue_tracker.issue_tracker.Builder.Comentario.ComentarioBuilder;
-import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
+import com.issue_tracker.issue_tracker.Builder.Evento.BuilderAlta;
 import com.issue_tracker.issue_tracker.Builder.Requerimiento.RequerimientoBuilder;
 import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoHandler;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
-import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.ArchivoAdjuntoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.enums.ExtensionesArchivos;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
-import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.Comentario;
@@ -95,8 +92,7 @@ public class RequerimientoService {
             requerimiento.addArchivoAdjunto(archivo);
         }
         
-        Evento evento = new EventoBuilder()
-        .buildActionTypeAltaRequerimiento()
+        Evento evento = new BuilderAlta()
         .buildRequerimiento(requerimiento)
         .buildUsuarioEmisor(data.getUsuarioEmisor())
         .build();
@@ -157,19 +153,8 @@ public class RequerimientoService {
         return archivoAdjunto;
     }
 
-    public void asignarNuevoPropietario(Integer requerimientoId, Usuario nuevoPropietario) 
+    public void asignarNuevoPropietario(Requerimiento requerimiento, Usuario nuevoPropietario) 
     throws Exception {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
-        String role = currentUser.getRole();
-        
-        if (role.equalsIgnoreCase("EXTERNO")) throw new ForbiddenException();
-
-        Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
-
-        if (requerimiento == null) throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
 
         RequerimientoHandler handler = new RequerimientoHandler(requerimiento);
 
@@ -178,21 +163,8 @@ public class RequerimientoService {
         requerimientoRepository.save(requerimiento);
     }
 
-    public Comentario crearNuevoComentario(NuevoComentarioData data) 
+    public Comentario registrarComentario(Requerimiento requerimiento, Comentario comentario) 
     throws Exception {
-
-        Integer requerimientoId = data.getRequerimientoId();
-        Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
-
-        if (requerimiento == null) 
-            throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
-
-        Comentario comentario = new ComentarioBuilder()
-        .buildAsunto(data.getAsunto())
-        .buildDescripcion(data.getDescripcion())
-        .buildUsuarioEmisor(data.getEmisor())
-        .buildRequerimiento(requerimiento)
-        .build();
 
         RequerimientoHandler handler = new RequerimientoHandler(requerimiento);
 

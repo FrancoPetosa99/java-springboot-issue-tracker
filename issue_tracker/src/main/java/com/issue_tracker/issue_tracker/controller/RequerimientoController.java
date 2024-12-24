@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,15 +32,20 @@ import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
+import com.issue_tracker.issue_tracker.Builder.Evento.BuilderAlta;
+import com.issue_tracker.issue_tracker.Builder.Evento.BuilderAsignacion;
+import com.issue_tracker.issue_tracker.Builder.Evento.BuilderCierre;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
+import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.CategoriaRequerimientoService;
+import com.issue_tracker.issue_tracker.service.EventoService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
@@ -60,6 +66,9 @@ public class RequerimientoController {
 
     @Autowired 
     private UsuarioService usuarioService;
+
+    @Autowired 
+    private EventoService eventoService;
 
     @Autowired
     private ResponseFactory responseFactory;
@@ -147,6 +156,7 @@ public class RequerimientoController {
             .body(response);
                 
         } catch (Exception e) {
+            
             HttpBodyResponse errorResponse = new HttpBodyResponse
             .Builder()
             .status("Error")
@@ -167,14 +177,11 @@ public class RequerimientoController {
 
         try {
             
-            CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-            
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
             Integer usuarioEmisorId = currentUser.getUserId();
-            
-            if (usuarioEmisorId == null) throw new UnauthorizedException();
+
             Usuario emisor = usuarioService.getUsuarioById(usuarioEmisorId);
 
             String tipoUsuario = currentUser.getRole();
@@ -212,8 +219,15 @@ public class RequerimientoController {
             
             Requerimiento requerimiento = requerimientoService.createNewRequerimiento(data);
             
+            Evento evento = new BuilderAlta()
+            .buildRequerimiento(requerimiento)
+            .buildUsuarioEmisor(emisor)
+            .build();
+
+            eventoService.registrarEvento(evento);
+
             RequerimientoResponse bodyResponse = mapper.mapRequerimientoToResonse(requerimiento);
-            
+
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
@@ -229,8 +243,6 @@ public class RequerimientoController {
         } 
         catch(BadRequestException e) {
                 return responseFactory.badRequest(e.getMessage());
-        }   catch (UnauthorizedException e) {
-                return responseFactory.unauthorizedError();
         }   catch (NotFoundException e) {
                 return responseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {
@@ -244,10 +256,24 @@ public class RequerimientoController {
     ) {
 
         try {
-
+            
             Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
-
+            
             requerimientoService.cerrarRequerimiento(requerimiento);
+            
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
+            Integer usuarioId = currentUser.getUserId();
+
+            Usuario usuarioEmisor = usuarioService.getUsuarioById(usuarioId);
+
+            Evento evento = new BuilderCierre()
+            .buildRequerimiento(requerimiento)
+            .buildUsuarioEmisor(usuarioEmisor)
+            .build();
+
+            eventoService.registrarEvento(evento);
 
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
@@ -260,9 +286,8 @@ public class RequerimientoController {
             return ResponseEntity
             .status(200)
             .body(response);
-                
-        } 
-        catch(BadRequestException e) {
+
+        } catch(BadRequestException e) {
                 return responseFactory.badRequest(e.getMessage());
         }   catch (ForbiddenException e) {
                 return responseFactory.errorForbidden();
@@ -282,10 +307,29 @@ public class RequerimientoController {
     ) {
 
         try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
+            String role = currentUser.getRole();
+            
+            if (role.equalsIgnoreCase("EXTERNO")) throw new ForbiddenException();
             
             Usuario nuevoUsuarioPropietario = usuarioService.getUsuarioById(propietarioId);
 
-            requerimientoService.asignarNuevoPropietario(requerimientoId, nuevoUsuarioPropietario);
+            Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
+
+            requerimientoService.asignarNuevoPropietario(requerimiento, nuevoUsuarioPropietario);
+
+            Integer usuarioId = currentUser.getUserId();
+            Usuario usuarioEmisor = usuarioService.getUsuarioById(usuarioId);
+
+            Evento evento = new BuilderAsignacion()
+            .buildRequerimiento(requerimiento)
+            .buildUsuarioEmisor(usuarioEmisor)
+            .build();
+
+            eventoService.registrarEvento(evento);
             
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
@@ -298,9 +342,8 @@ public class RequerimientoController {
             return ResponseEntity
             .status(200)
             .body(response);
-                
-        } 
-        catch(BadRequestException e) {
+
+        } catch(BadRequestException e) {
                 return responseFactory.badRequest(e.getMessage());
         }   catch (ForbiddenException e) {
                 return responseFactory.errorForbidden();
