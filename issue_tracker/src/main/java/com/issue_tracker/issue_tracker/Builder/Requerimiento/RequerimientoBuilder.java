@@ -20,9 +20,6 @@ public class RequerimientoBuilder {
     private CategoriaRequerimiento categoriaRequerimiento;
     private Usuario usuarioEmisor;
     private Usuario usuarioPropietario;
-    // private List<ArchivoAdjunto> archivosAdjuntos = new ArrayList<>();
-    // private List<Requerimiento> requerimientosRelacionados = new ArrayList<>();
-    // private List<Comentario> listaComentarios = new ArrayList<>();
     private List<Evento> listaEventos = new ArrayList<>();
 
     public RequerimientoBuilder() { }
