@@ -1,9 +1,6 @@
 package com.issue_tracker.issue_tracker.Builder.Comentario;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -12,7 +9,6 @@ public class ComentarioBuilder {
 
     private String asunto;
     private String descripcion;
-    // private List<ArchivoAdjunto> listaArchivos = new ArrayList<>();
     private Usuario usuarioEmisor;
     private Requerimiento requerimiento;
 
@@ -23,11 +19,6 @@ public class ComentarioBuilder {
 
     public ComentarioBuilder buildDescripcion(String descripcion) {
         this.descripcion = descripcion;
-        return this;
-    }
-
-    public ComentarioBuilder buildListaArchivos(List<ArchivoAdjunto> listaArchivos) {
-        this.listaArchivos = listaArchivos;
         return this;
     }
 

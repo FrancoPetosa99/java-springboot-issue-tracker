@@ -7,12 +7,10 @@ import com.issue_tracker.issue_tracker.model.Usuario;
 public class RequerimientoHandler {
 
     private RequerimientoState stateContext;
-    private Requerimiento requerimiento;
     
     public RequerimientoHandler(Requerimiento requerimiento) {
         StateFactory factory = new StateFactory();
         this.stateContext = factory.createStateContext(requerimiento);
-        this.requerimiento = requerimiento;
     }
 
     public void setStateContext(RequerimientoState stateContext) {
@@ -32,9 +30,5 @@ public class RequerimientoHandler {
     public void cerrarRequerimiento()
     throws Exception {
         this.stateContext.cerrarRequerimiento();
-    }
-    
-    public Requerimiento getRequerimiento() {
-        return this.requerimiento;
     }
 }
