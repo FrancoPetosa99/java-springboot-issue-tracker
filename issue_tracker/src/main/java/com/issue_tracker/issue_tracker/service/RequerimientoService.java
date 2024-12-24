@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.issue_tracker.issue_tracker.Builder.Comentario.ComentarioBuilder;
 import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
 import com.issue_tracker.issue_tracker.Builder.Requerimiento.RequerimientoBuilder;
 import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoHandler;
@@ -183,10 +184,10 @@ public class RequerimientoService {
         Integer requerimientoId = data.getRequerimientoId();
         Requerimiento requerimiento = requerimientoRepository.findById(requerimientoId).orElse(null);
 
-        if (requerimiento == null) throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
+        if (requerimiento == null) 
+            throw new NotFoundException("No se ha encontrado requerimiento con id: " + requerimientoId);
 
-        Comentario comentario = new Comentario
-        .Builder()
+        Comentario comentario = new ComentarioBuilder()
         .buildAsunto(data.getAsunto())
         .buildDescripcion(data.getDescripcion())
         .buildUsuarioEmisor(data.getEmisor())
