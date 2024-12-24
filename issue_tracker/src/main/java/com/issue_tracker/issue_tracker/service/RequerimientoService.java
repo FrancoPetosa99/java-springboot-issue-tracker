@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
+import com.issue_tracker.issue_tracker.Builder.Requerimiento.RequerimientoBuilder;
 import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoHandler;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NuevoComentarioData;
@@ -52,41 +54,50 @@ public class RequerimientoService {
         if (cantidad > 5) throw new BadRequestException("No se pueden adjuntar más de 5 archivos");
         
         TipoRequerimiento tipoRequerimiento = data.getTipoRequerimiento();
-        int currentYear = Year.now().getValue();
         String codigo = tipoRequerimiento.getCodigo();
+
+        Integer currentYear = Year.now().getValue();
+
         Integer requerimentNumber = requerimientoCodigoRepository.getCodigo(codigo, currentYear);
         
-        Requerimiento.Builder builder = new Requerimiento
-        .Builder()
+        RequerimientoBuilder builder = new RequerimientoBuilder()
         .setAsunto(data.getAsunto())
         .setDescripcion(data.getDescripcion())
         .setPrioridad(data.getPrioridad())
         .setUsuarioEmisor(data.getUsuarioEmisor())
         .setCodigo(tipoRequerimiento, requerimentNumber)
-        .setCategoriaRequerimiento(data.getCategoriaRequerimiento())
-        .setRequerimientosRelacionados(data.getListaRequerimientos());
+        .setCategoriaRequerimiento(data.getCategoriaRequerimiento());
 
         String tipoUsuario = data.getTipoUsuario();
-        Usuario propietario = data.getUsuarioPropietario();
+        
+        boolean esUsuarioInterno = tipoUsuario.equalsIgnoreCase("INTERNO");
 
-        if ("interno".equals(tipoUsuario) && propietario != null) {
+        if (esUsuarioInterno) {
+            
+            Usuario propietario = data.getUsuarioPropietario();
+
             builder
             .setUsuarioPropietario(propietario)
             .setEstado("Asignado");
         }
         
         Requerimiento requerimiento = builder.build();
+        
+        List<Requerimiento> requerimientosRelacionados = data.getListaRequerimientos();
 
+        for (Requerimiento requerimientoRelacionado : requerimientosRelacionados) {
+            requerimiento.addRequerimiento(requerimientoRelacionado);
+        }
+    
         for (ArchivoAdjuntoData archivoData : archivosAdjuntosData) {
             ArchivoAdjunto archivo = this.createArchivoAdjunto(archivoData);
             requerimiento.addArchivoAdjunto(archivo);
         }
         
-        Evento evento = new Evento
-        .Builder()
+        Evento evento = new EventoBuilder()
         .buildActionTypeAltaRequerimiento()
         .buildRequerimiento(requerimiento)
-        .buildUsuarioEmisor(propietario)
+        .buildUsuarioEmisor(data.getUsuarioEmisor())
         .build();
 
         requerimiento.addEvento(evento);

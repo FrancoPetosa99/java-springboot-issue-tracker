@@ -238,6 +238,43 @@ public class RequerimientoController {
         }
     }
 
+    @PutMapping("/{requerimientoId}/estado/cerrado")
+    public ResponseEntity<HttpBodyResponse> cerrarRequerimiento(
+        @PathVariable Integer requerimientoId
+    ) {
+
+        try {
+
+            Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
+
+            requerimientoService.cerrarRequerimiento(requerimiento);
+
+            HttpBodyResponse response = new HttpBodyResponse
+            .Builder()
+            .status("Success")
+            .statusCode(200)
+            .message("Se ha cerrado el requerimiento con exito")
+            .data(null)
+            .build();
+            
+            return ResponseEntity
+            .status(200)
+            .body(response);
+                
+        } 
+        catch(BadRequestException e) {
+                return responseFactory.badRequest(e.getMessage());
+        }   catch (ForbiddenException e) {
+                return responseFactory.errorForbidden();
+        }   catch (UnauthorizedException e) {
+                return responseFactory.unauthorizedError();
+        }   catch (NotFoundException e) {
+                return responseFactory.errorNotFound(e.getMessage());
+        } catch (Exception e) {
+                return responseFactory.internalServerError();
+        }
+    }
+    
     @PutMapping("/{requerimientoId}/propietarios/{propietarioId}")
     public ResponseEntity<HttpBodyResponse> asignarPropietario(
         @PathVariable Integer requerimientoId,
