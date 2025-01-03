@@ -9,18 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.dto.LoginRequest;
-import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.BodyResponse;
-import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoData;
-import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoRequest;
-import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioMapper;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
-import com.issue_tracker.issue_tracker.exception.NotFoundException;
-import com.issue_tracker.issue_tracker.model.Empresa;
-import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.AuthService;
-import com.issue_tracker.issue_tracker.service.EmpresaService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,66 +25,21 @@ public class AuthController {
     @Autowired
     private ResponseFactory responseFactory;
 
-    @Autowired
-    private EmpresaService empresaService;
-
     @GetMapping("/ping")
     public ResponseEntity<HttpBodyResponse> checkHealth() {
+
+        String message = "API says Hello Isabella!";
 
         HttpBodyResponse response = new HttpBodyResponse
         .Builder()
         .status("Success")
         .statusCode(200)
-        .message("API says: Hello!" )
+        .message(message)
         .build();
 
         return ResponseEntity
         .status(200)
         .body(response);
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<HttpBodyResponse> createNewUsuarioExterno(
-        @RequestBody UsuarioExternoRequest bodyRequest
-    ) {
-        
-        try {
-
-            String password = bodyRequest.getPassword();
-            String confimPassword = bodyRequest.getConfirmPassword();
-    
-            if (!password.equals(confimPassword)) throw new BadRequestException("Las contraseñas ingresadas no son iguales");
-
-            Integer empresaId = bodyRequest.getEmpresaId();
-            Empresa empresa = empresaService.getEmpresaById(empresaId);
-
-            UsuarioMapper mapper = new UsuarioMapper();
-
-            UsuarioExternoData data = mapper.mapRequestToData(bodyRequest, empresa);
-
-            UsuarioExterno nuevoUsuario = authService.registerNewExternalUser(data);
-
-            BodyResponse bodyResonse = mapper.mapUsuarioExternoToResponse(nuevoUsuario);
-
-            HttpBodyResponse response = new HttpBodyResponse
-            .Builder()
-            .status("Success")
-            .statusCode(201)
-            .message("Usuario registeado con exito")
-            .data(bodyResonse)
-            .build();
-    
-            return ResponseEntity
-            .status(201)
-            .body(response);
-
-        }   catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
-        }   catch(NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
-        }   catch(Exception e) {
-                return responseFactory.internalServerError();
-        }
     }
 
     @PostMapping("/login")

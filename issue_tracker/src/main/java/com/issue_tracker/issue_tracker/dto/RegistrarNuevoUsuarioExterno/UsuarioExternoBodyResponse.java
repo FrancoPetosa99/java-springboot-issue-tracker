@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BodyResponse {
+public class UsuarioExternoBodyResponse {
     private String nombre;
     private String apellido;
     private String email;

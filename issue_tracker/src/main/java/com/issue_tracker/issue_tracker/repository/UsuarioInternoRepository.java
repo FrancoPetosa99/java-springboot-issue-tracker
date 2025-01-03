@@ -6,5 +6,6 @@ import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 
 @Repository
 public interface UsuarioInternoRepository extends JpaRepository<UsuarioInterno, Integer> {
-    
+    boolean existsByEmail(String email);
+    boolean existsByLegajo(Integer legajo);
 }

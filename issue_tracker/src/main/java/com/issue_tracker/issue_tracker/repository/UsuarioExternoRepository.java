@@ -8,4 +8,6 @@ import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 public interface UsuarioExternoRepository extends JpaRepository<UsuarioExterno, Integer> {
     UsuarioExterno findByEmail(String email);
     UsuarioExterno findByCuil(String cuil);
+    boolean existsByEmail(String email);
+    boolean existsByCuil(String cuil);
 }
