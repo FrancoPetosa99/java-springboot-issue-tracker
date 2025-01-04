@@ -17,7 +17,8 @@ public class UsuarioService {
         
         Usuario user = usuarioRepository.findById(id).orElse(null);
 
-        if (user == null) throw new NotFoundException("No se ha encontrado usuario con id: " + id);
+        if (user == null) 
+            throw new NotFoundException("No se ha encontrado usuario con id: " + id);
 
         return user;
     }

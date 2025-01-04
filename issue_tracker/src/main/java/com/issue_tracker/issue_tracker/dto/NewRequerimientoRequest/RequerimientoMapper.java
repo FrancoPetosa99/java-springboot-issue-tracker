@@ -7,17 +7,17 @@ import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
+import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 
 public class RequerimientoMapper {
     
-    public NewRequerimientoData mapBodyRequestToData(
+    public static NewRequerimientoData mapBodyRequestToData(
         NewRequerimientoRequest request,
-        Usuario propietario,
+        UsuarioInterno propietario,
         Usuario emisor,
         TipoRequerimiento tipoRequerimiento,
         CategoriaRequerimiento categoriaRequerimiento,
-        List<Requerimiento> requerimientosRelacionados,
-        String tipoUsuario
+        List<Requerimiento> requerimientosRelacionados
     ) {
 
         NewRequerimientoData data = new NewRequerimientoData();
@@ -29,20 +29,13 @@ public class RequerimientoMapper {
         data.setCategoriaRequerimiento(categoriaRequerimiento);
         data.setUsuarioEmisor(emisor);
         data.setUsuarioPropietario(propietario);
-        
-        data.setListaArchivos(new ArrayList<ArchivoAdjuntoData>());
-        List<ArchivoAdjuntoData> listaArchivos = request.getListaArchivos();
-        if (listaArchivos != null) data.setListaArchivos(listaArchivos);
-
-        data.setListaRequerimientos(new ArrayList<Requerimiento>());
-        if (requerimientosRelacionados != null) data.setListaRequerimientos(requerimientosRelacionados);
-
-        data.setTipoUsuario(tipoUsuario);
+        data.setListaArchivos(request.getListaArchivos());  
+        data.setListaRequerimientos(requerimientosRelacionados);
         
         return data;
     }
 
-    public RequerimientoResponse mapRequerimientoToResonse(Requerimiento requerimiento) {
+    public static RequerimientoResponse mapRequerimientoToResonse(Requerimiento requerimiento) {
         RequerimientoResponse dto = new RequerimientoResponse();
         dto.setId(requerimiento.getId());
         dto.setCodigo(requerimiento.getCodigo());

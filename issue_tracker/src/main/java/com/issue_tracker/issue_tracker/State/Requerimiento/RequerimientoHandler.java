@@ -2,12 +2,12 @@ package com.issue_tracker.issue_tracker.State.Requerimiento;
 
 import com.issue_tracker.issue_tracker.model.Comentario;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
-import com.issue_tracker.issue_tracker.model.Usuario;
+import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 
 public class RequerimientoHandler {
 
     private RequerimientoState stateContext;
-    
+
     public RequerimientoHandler(Requerimiento requerimiento) {
         StateFactory factory = new StateFactory();
         this.stateContext = factory.createStateContext(requerimiento);
@@ -22,7 +22,7 @@ public class RequerimientoHandler {
         this.stateContext.agregarComentario(comentario);
     }
 
-    public void asignarPropietario(Usuario nuevoPropietario)
+    public void asignarPropietario(UsuarioInterno nuevoPropietario)
     throws Exception {
         this.stateContext.asignarNuevoPropietario(nuevoPropietario);
     }

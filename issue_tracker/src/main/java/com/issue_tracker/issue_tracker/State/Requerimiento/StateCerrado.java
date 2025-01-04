@@ -11,9 +11,9 @@ public class StateCerrado extends RequerimientoState {
         super(requerimiento);
     }
 
-    public void asignarNuevoPropietario(Usuario nuevoPropietario) {
-        this.requerimiento.setUsuarioPropietario(nuevoPropietario);
-        this.requerimiento.setEstado("Asignado");
+    public void asignarNuevoPropietario(Usuario nuevoPropietario) 
+    throws BadRequestException {
+        throw new BadRequestException("No puede asignarse un requerimiento una vez cerrado");
     }
 
     public void agregarComentario(Comentario comentario) 

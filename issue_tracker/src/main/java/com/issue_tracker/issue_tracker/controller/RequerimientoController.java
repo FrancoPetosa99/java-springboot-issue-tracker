@@ -32,9 +32,7 @@ import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
-import com.issue_tracker.issue_tracker.Builder.Evento.BuilderAlta;
-import com.issue_tracker.issue_tracker.Builder.Evento.BuilderAsignacion;
-import com.issue_tracker.issue_tracker.Builder.Evento.BuilderCierre;
+import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
@@ -42,6 +40,7 @@ import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
+import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.CategoriaRequerimientoService;
@@ -49,6 +48,8 @@ import com.issue_tracker.issue_tracker.service.EventoService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
+import com.issue_tracker.issue_tracker.service.CerrarRequerimiento.CerrarRequerimientoService;
+import com.issue_tracker.issue_tracker.service.RegistrarRequerimiento.RegistrarRequerimientoService;
 
 @RestController
 @RequestMapping("/api/requerimientos")
@@ -57,6 +58,12 @@ public class RequerimientoController {
 
     @Autowired
     private RequerimientoService requerimientoService;
+
+    @Autowired
+    private RegistrarRequerimientoService registrarRequerimientoService;
+
+    @Autowired
+    private CerrarRequerimientoService cerrarRequerimientoService;
 
     @Autowired
     private TipoRequerimientoService tipoRequerimientoService;
@@ -184,7 +191,7 @@ public class RequerimientoController {
 
             Usuario emisor = usuarioService.getUsuarioById(usuarioEmisorId);
 
-            String tipoUsuario = currentUser.getRole();
+            // String tipoUsuario = currentUser.getRole();
 
             Integer tipoRequerimientoId = requestBody.getTipoRequerimientoId();
             TipoRequerimiento tipoRequerimiento = tipoRequerimientoService.getTipoRequerimientoById(tipoRequerimientoId);
@@ -192,10 +199,10 @@ public class RequerimientoController {
             Integer categoriaRequerimientoId = requestBody.getCategoriaRequerimientoId();
             CategoriaRequerimiento categoriaRequerimiento = categoriaRequerimientoService.getCategoriaRequerimientoById(categoriaRequerimientoId);
         
-            Usuario propietario = null;
+            UsuarioInterno propietario = null;
             Integer usuarioPropietarioId = requestBody.getUsuarioPropietarioId();
             if (usuarioPropietarioId != 0 && usuarioPropietarioId != null) { 
-                propietario = usuarioService.getUsuarioById(usuarioPropietarioId);
+                propietario = (UsuarioInterno) usuarioService.getUsuarioById(usuarioPropietarioId);
             }
         
             List<Requerimiento> listaRequerimientosRelacionados = new ArrayList<>();
@@ -204,29 +211,19 @@ public class RequerimientoController {
                 Requerimiento requerimiento = requerimientoService.getRequerimientoById(id);
                 listaRequerimientosRelacionados.add(requerimiento);
             }
-                    
-            RequerimientoMapper mapper = new RequerimientoMapper();
-
-            NewRequerimientoData data = mapper.mapBodyRequestToData(
+                
+            NewRequerimientoData data = RequerimientoMapper.mapBodyRequestToData(
                 requestBody, 
                 propietario, 
                 emisor, 
                 tipoRequerimiento,
                 categoriaRequerimiento,
-                listaRequerimientosRelacionados,
-                tipoUsuario
+                listaRequerimientosRelacionados
             );
             
-            Requerimiento requerimiento = requerimientoService.createNewRequerimiento(data);
-            
-            Evento evento = new BuilderAlta()
-            .buildRequerimiento(requerimiento)
-            .buildUsuarioEmisor(emisor)
-            .build();
+            Requerimiento requerimiento = registrarRequerimientoService.registrarRequerimiento(data);
 
-            eventoService.registrarEvento(evento);
-
-            RequerimientoResponse bodyResponse = mapper.mapRequerimientoToResonse(requerimiento);
+            RequerimientoResponse bodyResponse = RequerimientoMapper.mapRequerimientoToResonse(requerimiento);
 
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
@@ -259,7 +256,7 @@ public class RequerimientoController {
             
             Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
             
-            requerimientoService.cerrarRequerimiento(requerimiento);
+            cerrarRequerimientoService.cerrarRequerimiento(requerimiento);
             
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -268,8 +265,9 @@ public class RequerimientoController {
 
             Usuario usuarioEmisor = usuarioService.getUsuarioById(usuarioId);
 
-            Evento evento = new BuilderCierre()
-            .buildRequerimiento(requerimiento)
+            Evento evento = new EventoBuilder()
+            .buildAccion("Cierre del Caso")
+            .buildRequerimeiento(requerimiento)
             .buildUsuarioEmisor(usuarioEmisor)
             .build();
 
@@ -324,8 +322,9 @@ public class RequerimientoController {
             Integer usuarioId = currentUser.getUserId();
             Usuario usuarioEmisor = usuarioService.getUsuarioById(usuarioId);
 
-            Evento evento = new BuilderAsignacion()
-            .buildRequerimiento(requerimiento)
+            Evento evento = new EventoBuilder()
+            .buildAccion("Requerimiento Asignado")
+            .buildRequerimeiento(requerimiento)
             .buildUsuarioEmisor(usuarioEmisor)
             .build();
 

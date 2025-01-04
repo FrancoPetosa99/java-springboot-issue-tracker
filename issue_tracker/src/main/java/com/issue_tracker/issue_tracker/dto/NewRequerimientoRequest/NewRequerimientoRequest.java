@@ -1,6 +1,7 @@
 package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
 import java.util.List;
+import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -23,6 +24,6 @@ public class NewRequerimientoRequest {
     private int categoriaRequerimientoId;
 
     private int usuarioPropietarioId;
-    private List<ArchivoAdjuntoData> listaArchivos;
+    private List<ArchivoAdjunto> listaArchivos;
     private List<Integer> listaRequerimientosId;
 }

@@ -1,23 +1,44 @@
 package com.issue_tracker.issue_tracker.Builder.Evento;
 
+import java.time.LocalDateTime;
 import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 
-public abstract class EventoBuilder {
+public class EventoBuilder {
 
-    protected Requerimiento requerimiento;
-    protected Usuario emisorUsuario;
+    private String accion;
+    private Requerimiento requerimiento;
+    private Usuario emisor;
 
-    public EventoBuilder buildRequerimiento(Requerimiento requerimiento) {
-        this.requerimiento = requerimiento;
+    public EventoBuilder buildAccion(String accion) {
+        this.accion = accion;
         return this;
     }
 
     public EventoBuilder buildUsuarioEmisor(Usuario emisor) {
-        this.emisorUsuario = emisor;
+        this.emisor = emisor;
         return this;
     }
 
-    public abstract Evento build();
+    public EventoBuilder buildRequerimeiento(Requerimiento requerimiento) {
+        this.requerimiento = requerimiento;
+        return this;
+    }
+
+    public Evento build() {
+        
+        Evento evento = new Evento(
+            null, 
+            accion, 
+            requerimiento, 
+            emisor, 
+            LocalDateTime.now(), 
+            LocalDateTime.now()
+        );
+
+        requerimiento.addEvento(evento);
+
+        return evento;
+    }
 }

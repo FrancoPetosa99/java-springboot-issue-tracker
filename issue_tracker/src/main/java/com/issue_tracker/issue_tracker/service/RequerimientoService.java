@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.issue_tracker.issue_tracker.Builder.Evento.BuilderAlta;
 import com.issue_tracker.issue_tracker.Builder.Requerimiento.RequerimientoBuilder;
 import com.issue_tracker.issue_tracker.State.Requerimiento.RequerimientoHandler;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
@@ -76,7 +75,7 @@ public class RequerimientoService {
 
             builder
             .setUsuarioPropietario(propietario)
-            .setEstado("Asignado");
+            
         }
         
         Requerimiento requerimiento = builder.build();

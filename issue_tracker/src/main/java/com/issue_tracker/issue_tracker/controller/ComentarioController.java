@@ -11,20 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.Builder.Comentario.ComentarioBuilder;
-import com.issue_tracker.issue_tracker.Builder.Evento.BuilderRespuesta;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NewComentarioRequest;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.Comentario;
-import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
-import com.issue_tracker.issue_tracker.service.EventoService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
+import com.issue_tracker.issue_tracker.service.ComentarRequerimiento.ComentarRequerimientoService;
 
 @RestController
 @RequestMapping("/api/requerimientos")
@@ -34,11 +32,11 @@ public class ComentarioController {
     @Autowired
     private RequerimientoService requerimientoService;
 
-    @Autowired 
-    private UsuarioService usuarioService;
+    @Autowired
+    private ComentarRequerimientoService comentarRequerimientoService;
 
     @Autowired 
-    private EventoService eventoService;
+    private UsuarioService usuarioService;
 
     @Autowired
     private ResponseFactory responseFactory;
@@ -67,14 +65,7 @@ public class ComentarioController {
             .buildRequerimiento(requerimiento)
             .build();
             
-            comentario = requerimientoService.registrarComentario(requerimiento, comentario);
-
-            Evento evento = new BuilderRespuesta()
-            .buildRequerimiento(requerimiento)
-            .buildUsuarioEmisor(usuarioEmisor)
-            .build();
-
-            eventoService.registrarEvento(evento);
+            comentarRequerimientoService.comentarRequerimiento(comentario, requerimiento);
 
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()

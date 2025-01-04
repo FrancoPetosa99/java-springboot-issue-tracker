@@ -3,12 +3,16 @@ package com.issue_tracker.issue_tracker.Builder.Requerimiento;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
-import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
+import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class RequerimientoBuilder {
     
     private String codigo;
@@ -19,10 +23,9 @@ public class RequerimientoBuilder {
     private TipoRequerimiento tipoRequerimiento;
     private CategoriaRequerimiento categoriaRequerimiento;
     private Usuario usuarioEmisor;
-    private Usuario usuarioPropietario;
-    private List<Evento> listaEventos = new ArrayList<>();
-
-    public RequerimientoBuilder() { }
+    private UsuarioInterno usuarioPropietario;
+    private List<Requerimiento> listaRequerimientos = new ArrayList<>();
+    private List<ArchivoAdjunto> listaArchivosAdjuntos = new ArrayList<>();
 
     public RequerimientoBuilder setDescripcion(String value) {
         this.descripcion = value;
@@ -39,11 +42,6 @@ public class RequerimientoBuilder {
         return this;
     }
 
-    public RequerimientoBuilder setTipoRequerimiento(TipoRequerimiento value) {
-        this.tipoRequerimiento = value;
-        return this;
-    }
-
     public RequerimientoBuilder setCategoriaRequerimiento(CategoriaRequerimiento value) {
         this.categoriaRequerimiento = value;
         return this;
@@ -54,12 +52,14 @@ public class RequerimientoBuilder {
         return this;
     }
 
-    public RequerimientoBuilder setUsuarioPropietario(Usuario value) {
-        this.usuarioPropietario = value;
+    public RequerimientoBuilder setUsuarioPropietario(UsuarioInterno propietario) {
+        this.usuarioPropietario = propietario;
+        if (propietario != null) this.estado = "Asignado";
         return this;
     }
 
     public RequerimientoBuilder setCodigo(TipoRequerimiento tipo, Integer number) {
+
         this.tipoRequerimiento = tipo;
 
         Integer digits = String.valueOf(Math.abs(number)).length();
@@ -73,13 +73,13 @@ public class RequerimientoBuilder {
         return this;
     }
 
-    public RequerimientoBuilder setEstado(String estado) {
-        this.estado = estado;
+    public RequerimientoBuilder setListaRequerimientos(List<Requerimiento> lista) {
+        this.listaRequerimientos = lista;
         return this;
     }
 
-    public RequerimientoBuilder buildEvento(Evento evento) {
-        this.listaEventos.add(evento);
+    public RequerimientoBuilder setListaArchivosAdjuntos(List<ArchivoAdjunto> lista) {
+        this.listaArchivosAdjuntos = lista;
         return this;
     }
 
@@ -96,6 +96,10 @@ public class RequerimientoBuilder {
         requerimiento.setCategoriaRequerimiento(this.categoriaRequerimiento);
         requerimiento.setUsuarioEmisor(this.usuarioEmisor);
         requerimiento.setUsuarioPropietario(this.usuarioPropietario);
+        requerimiento.setListaArchivos(this.listaArchivosAdjuntos);
+        requerimiento.setRequerimientosRelacionados(this.listaRequerimientos);
+        requerimiento.setListaEventos(new ArrayList<>());
+        requerimiento.setListaComentarios(new ArrayList<>());
         requerimiento.setCreatedAt(LocalDateTime.now());
         requerimiento.setUpdatedAt(LocalDateTime.now());
 
