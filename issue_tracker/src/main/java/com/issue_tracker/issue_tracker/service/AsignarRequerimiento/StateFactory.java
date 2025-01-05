@@ -1,11 +1,11 @@
-package com.issue_tracker.issue_tracker.service.CerrarRequerimiento;
+package com.issue_tracker.issue_tracker.service.AsignarRequerimiento;
 
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 
 public class StateFactory {
     
     public static RequerimientoState createRequerimientoState(Requerimiento requerimiento) {
-
+        
         String currentState = requerimiento.getEstado();
 
         RequerimientoState stateContext = null;
