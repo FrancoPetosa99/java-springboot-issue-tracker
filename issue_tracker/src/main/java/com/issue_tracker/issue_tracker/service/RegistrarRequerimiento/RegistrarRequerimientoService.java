@@ -3,15 +3,12 @@ package com.issue_tracker.issue_tracker.service.RegistrarRequerimiento;
 import java.time.Year;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
 import com.issue_tracker.issue_tracker.Builder.Requerimiento.RequerimientoBuilder;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
-import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
-import com.issue_tracker.issue_tracker.repository.EventoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoCodigoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 import jakarta.transaction.Transactional;
@@ -23,9 +20,6 @@ public class RegistrarRequerimientoService {
 
     @Autowired
     private RequerimientoCodigoRepository requerimientoCodigoRepository;
-
-    @Autowired
-    private EventoRepository eventoRepository;
 
     @Transactional
     public Requerimiento registrarRequerimiento(NewRequerimientoData data) 
@@ -57,14 +51,6 @@ public class RegistrarRequerimientoService {
         .build();
 
         requerimiento = requerimientoRepository.save(requerimiento);
-
-        Evento evento = new EventoBuilder()
-        .buildAccion("Alta")
-        .buildRequerimeiento(requerimiento)
-        .buildUsuarioEmisor(data.getUsuarioEmisor())
-        .build();
-
-        eventoRepository.save(evento);
 
         return requerimiento;
     }

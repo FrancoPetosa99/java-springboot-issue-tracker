@@ -192,8 +192,6 @@ public class RequerimientoController {
 
             Usuario emisor = usuarioService.getUsuarioById(usuarioEmisorId);
 
-            // String tipoUsuario = currentUser.getRole();
-
             Integer tipoRequerimientoId = requestBody.getTipoRequerimientoId();
             TipoRequerimiento tipoRequerimiento = tipoRequerimientoService.getTipoRequerimientoById(tipoRequerimientoId);
 
@@ -223,6 +221,8 @@ public class RequerimientoController {
             );
             
             Requerimiento requerimiento = registrarRequerimientoService.registrarRequerimiento(data);
+
+            eventoService.registrarEvento(requerimiento, emisor, "Alta Requerimiento");
 
             RequerimientoResponse bodyResponse = RequerimientoMapper.mapRequerimientoToResonse(requerimiento);
 
