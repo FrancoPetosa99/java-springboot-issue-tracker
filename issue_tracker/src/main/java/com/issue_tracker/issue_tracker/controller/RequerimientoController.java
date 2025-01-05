@@ -32,11 +32,9 @@ import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
-import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
-import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -48,6 +46,7 @@ import com.issue_tracker.issue_tracker.service.EventoService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
+import com.issue_tracker.issue_tracker.service.AsignarRequerimiento.AsignarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.CerrarRequerimiento.CerrarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.RegistrarRequerimiento.RegistrarRequerimientoService;
 
@@ -64,6 +63,8 @@ public class RequerimientoController {
 
     @Autowired
     private CerrarRequerimientoService cerrarRequerimientoService;
+
+    @Autowired AsignarRequerimientoService AsignarRequerimientoService;
 
     @Autowired
     private TipoRequerimientoService tipoRequerimientoService;
@@ -264,14 +265,8 @@ public class RequerimientoController {
             Integer usuarioId = currentUser.getUserId();
 
             Usuario usuarioEmisor = usuarioService.getUsuarioById(usuarioId);
-
-            Evento evento = new EventoBuilder()
-            .buildAccion("Cierre del Caso")
-            .buildRequerimeiento(requerimiento)
-            .buildUsuarioEmisor(usuarioEmisor)
-            .build();
-
-            eventoService.registrarEvento(evento);
+            
+            eventoService.registrarEvento(requerimiento, usuarioEmisor,"Cierre del Caso");
 
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
@@ -313,22 +308,16 @@ public class RequerimientoController {
             
             if (role.equalsIgnoreCase("EXTERNO")) throw new ForbiddenException();
             
-            Usuario nuevoUsuarioPropietario = usuarioService.getUsuarioById(propietarioId);
+            UsuarioInterno nuevoUsuarioPropietario = (UsuarioInterno) usuarioService.getUsuarioById(propietarioId);
 
             Requerimiento requerimiento = requerimientoService.getRequerimientoById(requerimientoId);
-
-            requerimientoService.asignarNuevoPropietario(requerimiento, nuevoUsuarioPropietario);
+            
+            AsignarRequerimientoService.asignarRequerimiento(requerimiento, nuevoUsuarioPropietario);
 
             Integer usuarioId = currentUser.getUserId();
             Usuario usuarioEmisor = usuarioService.getUsuarioById(usuarioId);
 
-            Evento evento = new EventoBuilder()
-            .buildAccion("Requerimiento Asignado")
-            .buildRequerimeiento(requerimiento)
-            .buildUsuarioEmisor(usuarioEmisor)
-            .build();
-
-            eventoService.registrarEvento(evento);
+            eventoService.registrarEvento(requerimiento, usuarioEmisor, "Requerimiento Asignado");
             
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()

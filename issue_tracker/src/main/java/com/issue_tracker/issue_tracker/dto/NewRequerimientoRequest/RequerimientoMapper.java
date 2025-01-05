@@ -1,8 +1,6 @@
 package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
