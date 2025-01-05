@@ -1,10 +1,12 @@
 package com.issue_tracker.issue_tracker.service.CerrarRequerimiento;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 import com.issue_tracker.issue_tracker.service.EventoService;
 
+@Service
 public class CerrarRequerimientoService {
 
     @Autowired

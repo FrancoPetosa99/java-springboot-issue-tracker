@@ -3,6 +3,8 @@ package com.issue_tracker.issue_tracker.service.RegistrarRequerimiento;
 import java.time.Year;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.issue_tracker.issue_tracker.Builder.Requerimiento.RequerimientoBuilder;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
@@ -13,6 +15,7 @@ import com.issue_tracker.issue_tracker.repository.RequerimientoCodigoRepository;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 import jakarta.transaction.Transactional;
 
+@Service
 public class RegistrarRequerimientoService {
     
     @Autowired
