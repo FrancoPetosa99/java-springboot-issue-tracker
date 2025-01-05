@@ -49,6 +49,7 @@ import com.issue_tracker.issue_tracker.service.UsuarioService;
 import com.issue_tracker.issue_tracker.service.AsignarRequerimiento.AsignarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.CerrarRequerimiento.CerrarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.RegistrarRequerimiento.RegistrarRequerimientoService;
+import com.issue_tracker.issue_tracker.service.VisualizarRequerimientos.BuscarRequerimientosService;
 
 @RestController
 @RequestMapping("/api/requerimientos")
@@ -57,6 +58,9 @@ public class RequerimientoController {
 
     @Autowired
     private RequerimientoService requerimientoService;
+
+    @Autowired
+    private BuscarRequerimientosService buscarRequerimientoService;
 
     @Autowired
     private RegistrarRequerimientoService registrarRequerimientoService;
@@ -96,7 +100,7 @@ public class RequerimientoController {
             : Sort.by(sortBy).descending();
 
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<Requerimiento> requerimientos = requerimientoService.getRequerimientos(pageable);
+            Page<Requerimiento> requerimientos = buscarRequerimientoService.buscarRequerimientos(pageable);
 
             DetalleRequerimientoMapper mapper = new DetalleRequerimientoMapper();
 

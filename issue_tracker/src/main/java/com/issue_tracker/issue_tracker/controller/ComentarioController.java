@@ -97,7 +97,7 @@ public class ComentarioController {
     }
 
     @GetMapping("/requerimientos/{requerimientoId}")
-    public ResponseEntity<HttpBodyResponse> registrarComentarioEnRequerimiento(
+    public ResponseEntity<HttpBodyResponse> getComentariosByRequerimiento(
         @PathVariable Integer requerimientoId
     ) {
 
