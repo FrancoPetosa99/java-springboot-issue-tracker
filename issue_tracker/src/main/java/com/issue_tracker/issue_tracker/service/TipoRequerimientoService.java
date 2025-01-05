@@ -22,7 +22,8 @@ public class TipoRequerimientoService {
 
         TipoRequerimiento tipoRequerimiento = tipoRequerimientoRepository.findById(tipoRequerimientoId).orElse(null);
 
-        if(tipoRequerimiento == null) throw new NotFoundException("No se ha encontrado Tipo Requerimiento con id: " + tipoRequerimientoId);
+        if(tipoRequerimiento == null) 
+            throw new NotFoundException("No se ha encontrado Tipo Requerimiento con id: " + tipoRequerimientoId);
 
         return tipoRequerimiento;
     }

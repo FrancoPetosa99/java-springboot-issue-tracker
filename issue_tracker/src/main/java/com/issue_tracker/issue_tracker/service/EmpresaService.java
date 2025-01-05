@@ -15,8 +15,12 @@ public class EmpresaService {
 
     public Empresa getEmpresaById(Integer empresaId)
     throws NotFoundException {
+        
         Empresa empresa = empresaRepository.findById(empresaId).orElse(null);
-        if (empresa == null) throw new NotFoundException("No se ha encontrado empresa con id: " + empresaId);
+
+        if (empresa == null) 
+            throw new NotFoundException("No se ha encontrado empresa con id: " + empresaId);
+            
         return empresa;
     }
 

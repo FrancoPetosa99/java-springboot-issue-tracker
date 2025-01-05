@@ -1,5 +1,6 @@
 package com.issue_tracker.issue_tracker.service;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
@@ -23,5 +24,9 @@ public class EventoService {
         .build();
 
         return eventoRepository.save(evento);
+    }
+
+    public List<Evento> getEventosByRequerimientoById(Integer requerimientoId) {
+        return eventoRepository.findByRequerimientoId(requerimientoId);
     }
 }
