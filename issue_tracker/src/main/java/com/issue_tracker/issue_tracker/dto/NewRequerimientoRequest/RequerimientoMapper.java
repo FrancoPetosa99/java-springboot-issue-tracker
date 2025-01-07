@@ -1,6 +1,8 @@
 package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
@@ -27,7 +29,23 @@ public class RequerimientoMapper {
         data.setCategoriaRequerimiento(categoriaRequerimiento);
         data.setUsuarioEmisor(emisor);
         data.setUsuarioPropietario(propietario);
-        data.setListaArchivos(request.getListaArchivos());  
+        data.setListaArchivos(
+            request.getListaArchivos()
+            .stream()
+            .map(archivoData -> {
+
+                ArchivoAdjunto archivo = new ArchivoAdjunto();
+
+                archivo.setNombre(archivoData.getNombre());
+                archivo.setExtension(archivoData.getExtension());
+                archivo.setContenido(archivoData.getContenido());
+                archivo.setCreatedAt(LocalDateTime.now());
+                archivo.setUpdatedAt(LocalDateTime.now());
+
+                return archivo;
+            }
+            ).toList()
+        );
         data.setListaRequerimientos(requerimientosRelacionados);
         
         return data;

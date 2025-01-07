@@ -18,9 +18,6 @@ import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 public class TipoRequerimientoController {
 
     @Autowired
-    private ResponseFactory responseFactory;
-
-    @Autowired
     private TipoRequerimientoService tipoRequerimientoService;
 
     @GetMapping("/")
@@ -43,7 +40,7 @@ public class TipoRequerimientoController {
             .body(response);
                 
         } catch (Exception e) {
-            return responseFactory.internalServerError();
+            return ResponseFactory.internalServerError();
         }
     }
 }

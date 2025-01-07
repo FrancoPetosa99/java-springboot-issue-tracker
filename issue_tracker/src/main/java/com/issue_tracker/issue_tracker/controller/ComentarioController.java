@@ -45,9 +45,6 @@ public class ComentarioController {
     @Autowired 
     private UsuarioService usuarioService;
 
-    @Autowired
-    private ResponseFactory responseFactory;
-
     @PostMapping("/requerimientos/{requerimientoId}")
     public ResponseEntity<HttpBodyResponse> registrarComentarioEnRequerimiento(
         @PathVariable Integer requerimientoId,
@@ -88,11 +85,11 @@ public class ComentarioController {
                 
         } 
         catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch (NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
+                return ResponseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
 
@@ -118,7 +115,7 @@ public class ComentarioController {
             .body(response);
                 
         } catch (Exception e) {
-            return responseFactory.internalServerError();
+            return ResponseFactory.internalServerError();
         }
     }
 }

@@ -23,9 +23,6 @@ public class EmpresaController {
     @Autowired
     private EmpresaService empresaService;
 
-    @Autowired
-    private ResponseFactory responseFactory;
-
     @GetMapping("/")
     public ResponseEntity<HttpBodyResponse> getEmpresas() {
         
@@ -53,7 +50,7 @@ public class EmpresaController {
             .body(response);
 
         } catch (Exception e) {
-            return responseFactory.internalServerError();
+            return ResponseFactory.internalServerError();
         }
     }
 }

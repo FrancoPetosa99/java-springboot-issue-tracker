@@ -22,7 +22,8 @@ public class CategoriaRequerimientoService {
 
         CategoriaRequerimiento categoriaRequerimiento = categoriaRequerimientoRepository.findById(categoriaRequerimientoId).orElse(null);
 
-        if(categoriaRequerimiento == null) throw new NotFoundException("No se ha encontrado Categoria Requerimiento con id: " + categoriaRequerimientoId);
+        if(categoriaRequerimiento == null) 
+            throw new NotFoundException("No se ha encontrado Categoria Requerimiento con id: " + categoriaRequerimientoId);
 
         return categoriaRequerimiento;
     }

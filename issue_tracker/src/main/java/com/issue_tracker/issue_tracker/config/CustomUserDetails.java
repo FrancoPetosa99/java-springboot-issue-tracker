@@ -8,13 +8,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
+    private String name;
+    private String lastName;
     private String userName;
     private String email;
     private String role;
     private Integer id;
 
-    public CustomUserDetails(String userName, String email, String role, Integer id) {
+    public CustomUserDetails(
+        String userName,
+        String name,
+        String lastName,
+        String email, 
+        String role, 
+        Integer id
+    ) {
         this.userName = userName;
+        this.name = name;
+        this.lastName = lastName;
         this.email = email;
         this.role = role;
         this.id = id;
@@ -22,6 +33,14 @@ public class CustomUserDetails implements UserDetails {
 
     public String getEmail() {
         return this.email;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+
+    public String getLastName() {
+        return this.lastName;
     }
 
     public Integer getUserId() {

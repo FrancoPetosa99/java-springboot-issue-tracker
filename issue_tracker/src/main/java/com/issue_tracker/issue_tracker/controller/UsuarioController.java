@@ -24,9 +24,6 @@ import com.issue_tracker.issue_tracker.service.RegistrarUsuario.RegistrarUsuario
 public class UsuarioController {
 
     @Autowired
-    private ResponseFactory responseFactory;
-
-    @Autowired
     private EmpresaService empresaService;
 
     @Autowired
@@ -67,11 +64,11 @@ public class UsuarioController {
             .body(response);
 
         }   catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch(NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
+                return ResponseFactory.errorNotFound(e.getMessage());
         }   catch(Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
 
@@ -110,11 +107,11 @@ public class UsuarioController {
             .body(response);
 
         }   catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch(NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
+                return ResponseFactory.errorNotFound(e.getMessage());
         }   catch(Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
 }

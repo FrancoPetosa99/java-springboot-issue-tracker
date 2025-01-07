@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación de Asignación de Requerimiento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .email-header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 20px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .email-footer {
+            background-color: #f4f4f4;
+            padding: 10px 20px;
+            text-align: center;
+            color: #777777;
+            font-size: 12px;
+        }
+        .case-details {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .case-details h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .case-details p {
+            margin: 5px 0;
+        }
+        .signature {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .signature img {
+            max-width: 150px;
+            margin: 10px 0;
+        }
+        .signature p {
+            margin: 5px 0;
+            color: #555555;
+        }
+        a.button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        a.button:hover {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <h1>Requerimiento Asignado</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="email-body">
+            <p>Hola <span th:text="${nombre ?: 'N/A'}"></span>,</p>
+            <p>Se te ha asignado el siguiente requerimiento:</p>
+
+            <!-- Case Details -->
+            <div class="case-details">
+                <h3>Detalles del Requerimiento</h3>
+                <p><strong>Código:</strong> <span th:text="${codigo ?: 'N/A'}"></span></p>
+                <p><strong>Tipo:</strong> <span th:text="${tipo ?: 'N/A'}"></span></p>
+                <p><strong>Categoría:</strong> <span th:text="${categoria ?: 'N/A'}"></span></p>
+                <p><strong>Asunto:</strong> <span th:text="${asunto ?: 'N/A'}"></span></p>
+                <p><strong>Descripción:</strong> <span th:text="${descripcion ?: 'N/A'}"></span></p>
+                <p><strong>Fecha de Asignación:</strong> <span th:text="${fecha ?: 'N/A'}"></span></p>
+            </div>
+
+            <p>Por favor, revisa los detalles del requerimiento y procede con las acciones correspondientes.</p>
+        </div>
+
+        <!-- Firma -->
+        <div class="signature">
+            <img src="https://via.placeholder.com/150x50?text=Logo+Empresa" alt="Logo de la Empresa">
+            <p>Atentamente,</p>
+            <p><strong>El equipo de FiloSoftware</strong></p>
+            <p><a href="https://www.FiloSoftware.com">www.FiloSoftware.com</a></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p>Este es un mensaje automático. Por favor, no respondas a este correo.</p>
+            <p>© 2025 FiloSoftware. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

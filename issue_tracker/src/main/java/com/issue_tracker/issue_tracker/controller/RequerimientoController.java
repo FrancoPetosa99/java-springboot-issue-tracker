@@ -48,6 +48,9 @@ import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
 import com.issue_tracker.issue_tracker.service.AsignarRequerimiento.AsignarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.CerrarRequerimiento.CerrarRequerimientoService;
+import com.issue_tracker.issue_tracker.service.EnviarEmail.Email;
+import com.issue_tracker.issue_tracker.service.EnviarEmail.EmailBuilder;
+import com.issue_tracker.issue_tracker.service.EnviarEmail.EmailService;
 import com.issue_tracker.issue_tracker.service.RegistrarRequerimiento.RegistrarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.VisualizarRequerimientos.BuscarRequerimientosService;
 
@@ -83,8 +86,8 @@ public class RequerimientoController {
     private EventoService eventoService;
 
     @Autowired
-    private ResponseFactory responseFactory;
-    
+    private EmailService emailService;
+ 
     @GetMapping("/")
     public ResponseEntity<HttpBodyResponse> getRequerimientos(
         @RequestParam(defaultValue = "0") Integer page,
@@ -228,6 +231,38 @@ public class RequerimientoController {
 
             eventoService.registrarEvento(requerimiento, emisor, "Alta Requerimiento");
 
+            Email email = new EmailBuilder()
+            .buildAsunto("Nuevo Requerimiento " + requerimiento.getCodigo() + " Registrado en el Sistema")
+            .buildTemplateHtml("notificarAltaRequerimiento")
+            .buildDestinatario(currentUser.getEmail())
+            .buildContext("nombre", currentUser.getName())
+            .buildContext("codigo", requerimiento.getCodigo())
+            .buildContext("tipo", tipoRequerimiento.getDescripcion())
+            .buildContext("categoria", categoriaRequerimiento.getDescripcion())
+            .buildContext("asunto", requerimiento.getAsunto())
+            .buildContext("descripcion", requerimiento.getDescripcion())
+            .build();
+
+            emailService.sendEmail(email);
+
+            if (propietario != null) {
+                
+                email = new EmailBuilder()
+                .buildAsunto("Requerimiento " + requerimiento.getCodigo() + " Asignado")
+                .buildTemplateHtml("notificarAsignacionRequerimiento")
+                // .buildDestinatario(propietario.getEmail())
+                .buildDestinatario(currentUser.getEmail())
+                .buildContext("nombre", propietario.getNombre())
+                .buildContext("codigo", requerimiento.getCodigo())
+                .buildContext("tipo", tipoRequerimiento.getDescripcion())
+                .buildContext("categoria", categoriaRequerimiento.getDescripcion())
+                .buildContext("asunto", requerimiento.getAsunto())
+                .buildContext("descripcion", requerimiento.getDescripcion())
+                .build();
+    
+                emailService.sendEmail(email);
+            }
+
             RequerimientoResponse bodyResponse = RequerimientoMapper.mapRequerimientoToResonse(requerimiento);
 
             HttpBodyResponse response = new HttpBodyResponse
@@ -244,11 +279,11 @@ public class RequerimientoController {
                 
         } 
         catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch (NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
+                return ResponseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
 
@@ -285,15 +320,15 @@ public class RequerimientoController {
             .body(response);
 
         } catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch (ForbiddenException e) {
-                return responseFactory.errorForbidden();
+                return ResponseFactory.errorForbidden();
         }   catch (UnauthorizedException e) {
-                return responseFactory.unauthorizedError();
+                return ResponseFactory.unauthorizedError();
         }   catch (NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
+                return ResponseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
     
@@ -336,15 +371,15 @@ public class RequerimientoController {
             .body(response);
 
         } catch(BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch (ForbiddenException e) {
-                return responseFactory.errorForbidden();
+                return ResponseFactory.errorForbidden();
         }   catch (UnauthorizedException e) {
-                return responseFactory.unauthorizedError();
+                return ResponseFactory.unauthorizedError();
         }   catch (NotFoundException e) {
-                return responseFactory.errorNotFound(e.getMessage());
+                return ResponseFactory.errorNotFound(e.getMessage());
         } catch (Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
 }

@@ -2,18 +2,16 @@ package com.issue_tracker.issue_tracker.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ResponseFactory {
     
-    public ResponseEntity<HttpBodyResponse> success(HttpBodyResponse data) {
+    public static ResponseEntity<HttpBodyResponse> success(HttpBodyResponse data) {
         return ResponseEntity
         .status(data.getStatusCode())
         .body(data);
     }
 
-    public ResponseEntity<HttpBodyResponse> badRequest(String message) {
+    public static ResponseEntity<HttpBodyResponse> badRequest(String message) {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -27,7 +25,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<HttpBodyResponse> errorNotFound(String message) {
+    public static ResponseEntity<HttpBodyResponse> errorNotFound(String message) {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -41,7 +39,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<HttpBodyResponse> unauthorizedError() {
+    public static ResponseEntity<HttpBodyResponse> unauthorizedError() {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -56,7 +54,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<HttpBodyResponse> errorForbidden() {
+    public static ResponseEntity<HttpBodyResponse> errorForbidden() {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()
@@ -71,7 +69,7 @@ public class ResponseFactory {
         .body(data);
     }
 
-    public ResponseEntity<HttpBodyResponse> internalServerError() {
+    public static ResponseEntity<HttpBodyResponse> internalServerError() {
 
         HttpBodyResponse data = new HttpBodyResponse
         .Builder()

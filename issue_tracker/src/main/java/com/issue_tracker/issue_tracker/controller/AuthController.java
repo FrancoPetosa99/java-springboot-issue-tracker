@@ -21,11 +21,8 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private ResponseFactory responseFactory;
-
-    @GetMapping("/ping")
+    
+    @GetMapping("/checkHealth")
     public ResponseEntity<HttpBodyResponse> checkHealth() {
 
         String message = "API says Hello Isabella!";
@@ -67,9 +64,9 @@ public class AuthController {
             .body(response);
 
         }   catch (BadRequestException e) {
-                return responseFactory.badRequest(e.getMessage());
+                return ResponseFactory.badRequest(e.getMessage());
         }   catch (Exception e) {
-                return responseFactory.internalServerError();
+                return ResponseFactory.internalServerError();
         }
     }
 }

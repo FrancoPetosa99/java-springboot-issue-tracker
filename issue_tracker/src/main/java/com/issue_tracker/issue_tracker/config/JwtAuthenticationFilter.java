@@ -36,6 +36,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Map<String, Object> payload = JwtToken.getPayload(authToken);
             Integer loggedInUserId = (Integer) payload.get("id");
             String userEmail = (String) payload.get("email");
+            String name = (String) payload.get("nombre");
+            String lastName = (String) payload.get("apellido");
             String userName = (String) payload.get("nombreUsuario");
             String role = (String) payload.get("tipo");
 
@@ -45,6 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             CustomUserDetails userDetails = new CustomUserDetails(
                 userName,
+                name,
+                lastName,
                 userEmail,
                 role,
                 loggedInUserId
@@ -59,7 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder
             .getContext()
             .setAuthentication(authentication);
-                
         }
 
         chain.doFilter(request, response);
