@@ -1,4 +1,4 @@
-package com.issue_tracker.issue_tracker.Builder.Comentario;
+package com.issue_tracker.issue_tracker.builder.comentario;
 
 import java.time.LocalDateTime;
 import com.issue_tracker.issue_tracker.model.Comentario;

@@ -3,7 +3,8 @@ package com.issue_tracker.issue_tracker.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.issue_tracker.issue_tracker.Builder.Evento.EventoBuilder;
+
+import com.issue_tracker.issue_tracker.builder.evento.EventoBuilder;
 import com.issue_tracker.issue_tracker.model.Evento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;

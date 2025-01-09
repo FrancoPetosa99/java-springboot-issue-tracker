@@ -2,8 +2,11 @@ package com.issue_tracker.issue_tracker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoBodyResponse;
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoBodyRequest;
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioInterno.UsuarioInternoBodyRequest;
@@ -21,6 +24,9 @@ import com.issue_tracker.issue_tracker.service.EmpresaService;
 import com.issue_tracker.issue_tracker.service.RegistrarUsuario.RegistrarUsuarioExternoService;
 import com.issue_tracker.issue_tracker.service.RegistrarUsuario.RegistrarUsuarioInternoService;
 
+@RestController
+@RequestMapping("/api/usuario")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     @Autowired
@@ -32,7 +38,7 @@ public class UsuarioController {
     @Autowired
     private RegistrarUsuarioExternoService registrarUsuarioExternoService;
 
-    @PostMapping("/usuario/interno")
+    @PostMapping("/interno")
     public ResponseEntity<HttpBodyResponse> createNewUsuarioInterno(
         @RequestBody UsuarioInternoBodyRequest bodyRequest
     ) {
@@ -72,7 +78,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/usuario/externo")
+    @PostMapping("/externo")
     public ResponseEntity<HttpBodyResponse> createNewUsuarioExterno(
         @RequestBody UsuarioExternoBodyRequest bodyRequest
     ) {

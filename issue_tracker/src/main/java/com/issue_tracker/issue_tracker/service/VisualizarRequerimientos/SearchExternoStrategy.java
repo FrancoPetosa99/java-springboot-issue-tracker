@@ -6,11 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
+import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 
 public class SearchExternoStrategy extends SearchStrategy {
 
-    public SearchExternoStrategy() {
-        super();
+    public SearchExternoStrategy(RequerimientoRepository requerimientoRepository) {
+        super(requerimientoRepository);
     }
     
     public Page<Requerimiento> buscarRequerimientos(Pageable pageable) {

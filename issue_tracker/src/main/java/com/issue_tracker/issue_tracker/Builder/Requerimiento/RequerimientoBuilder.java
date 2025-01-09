@@ -1,4 +1,4 @@
-package com.issue_tracker.issue_tracker.Builder.Requerimiento;
+package com.issue_tracker.issue_tracker.builder.requerimiento;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

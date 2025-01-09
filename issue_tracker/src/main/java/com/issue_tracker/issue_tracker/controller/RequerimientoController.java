@@ -132,6 +132,7 @@ public class RequerimientoController {
             .body(response);
                 
         } catch (Exception e) {
+            
             HttpBodyResponse errorResponse = new HttpBodyResponse
             .Builder()
             .status("Error")

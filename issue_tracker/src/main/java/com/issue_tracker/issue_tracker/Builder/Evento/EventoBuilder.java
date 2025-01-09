@@ -1,4 +1,4 @@
-package com.issue_tracker.issue_tracker.Builder.Evento;
+package com.issue_tracker.issue_tracker.builder.evento;
 
 import java.time.LocalDateTime;
 import com.issue_tracker.issue_tracker.model.Evento;
