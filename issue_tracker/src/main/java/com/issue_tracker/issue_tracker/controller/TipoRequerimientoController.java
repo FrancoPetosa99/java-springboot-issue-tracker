@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
+import com.issue_tracker.issue_tracker.dto.RecuperarTipoRequerimientos.TipoRequerimientoDTO;
+import com.issue_tracker.issue_tracker.dto.RecuperarTipoRequerimientos.TipoRequerimientoMapper;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
 
 @RestController
-@RequestMapping("/api/tipos_requerimiento")
+@RequestMapping("/api/tipos_requerimientos")
 @CrossOrigin(origins = "*")
 public class TipoRequerimientoController {
 
@@ -25,7 +26,11 @@ public class TipoRequerimientoController {
 
         try {
 
-            List<TipoRequerimiento> tipoRequerimientos = tipoRequerimientoService.getTipoRequerimientos();
+            List<TipoRequerimientoDTO> tipoRequerimientos = tipoRequerimientoService
+            .getTipoRequerimientos()
+            .stream()
+            .map(tipoRequerimiento -> TipoRequerimientoMapper.mapTipoRequerimientoToDTO(tipoRequerimiento))
+            .toList();
             
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()

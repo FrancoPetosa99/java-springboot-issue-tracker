@@ -40,7 +40,7 @@ public class TipoRequerimiento {
     @JsonManagedReference
     @OneToMany(mappedBy = "tipoRequerimiento", fetch = FetchType.LAZY)
     private List<Requerimiento> requerimientos;
-
+    
     @JsonManagedReference
     @OneToMany(mappedBy = "tipoRequerimiento", fetch = FetchType.LAZY)
     private List<CategoriaRequerimiento> categorias;

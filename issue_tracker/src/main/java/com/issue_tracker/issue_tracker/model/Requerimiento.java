@@ -55,13 +55,13 @@ public class Requerimiento {
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Evento> listaEventos;
     
-    @ManyToOne
     @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "tipo_requerimiento_id")
     private TipoRequerimiento tipoRequerimiento;
 
-    @ManyToOne
     @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "categoria_requerimiento_id")
     private CategoriaRequerimiento categoriaRequerimiento;
     

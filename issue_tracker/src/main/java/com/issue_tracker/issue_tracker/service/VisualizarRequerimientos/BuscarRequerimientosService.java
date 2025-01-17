@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
@@ -17,7 +16,8 @@ public class BuscarRequerimientosService {
     @Autowired
     RequerimientoRepository requerimientoRepository;
 
-    public Page<Requerimiento> buscarRequerimientos(Pageable pageable) {
+    public Page<Requerimiento> buscarRequerimientos(Pageable pageable) 
+    throws Exception {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         

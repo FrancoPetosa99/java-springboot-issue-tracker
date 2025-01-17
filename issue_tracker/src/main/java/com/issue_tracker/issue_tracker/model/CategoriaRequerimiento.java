@@ -3,6 +3,7 @@ package com.issue_tracker.issue_tracker.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
@@ -29,6 +30,7 @@ public class CategoriaRequerimiento {
     @Column(name = "descripcion")
     private String descripcion;
     
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "tipo_requerimiento_id")
     private TipoRequerimiento tipoRequerimiento;

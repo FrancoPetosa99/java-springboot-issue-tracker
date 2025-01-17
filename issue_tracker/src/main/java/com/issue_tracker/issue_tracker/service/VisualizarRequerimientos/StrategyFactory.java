@@ -14,18 +14,14 @@ public class StrategyFactory {
         strategies.put("INTERNO", SearchInternoStrategy.class);
     }
 
-    public static SearchStrategy getStrategyClass(String userType, RequerimientoRepository repository) {
-        try {
-         
-            Class<? extends SearchStrategy> strategyClass = strategies.get(userType.toUpperCase());
+    public static SearchStrategy getStrategyClass(String userType, RequerimientoRepository repository) 
+    throws Exception {
+    
+        Class<? extends SearchStrategy> strategyClass = strategies.get(userType.toUpperCase());
             
-            if (strategyClass == null) 
-                throw new IllegalArgumentException("No existe estrategia para el tipo de usuario: " + userType);
-                
-            return strategyClass.getDeclaredConstructor(RequerimientoRepository.class).newInstance(repository);
+        if (strategyClass == null) 
+            throw new IllegalArgumentException("No existe estrategia para el tipo de usuario: " + userType);
 
-        } catch (Exception e) {
-            throw new IllegalStateException("Error al crear instancia de estrategia para: " + userType, e);
-        }
+        return strategyClass.getDeclaredConstructor(RequerimientoRepository.class).newInstance(repository);
     }
 }
