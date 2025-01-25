@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.issue_tracker.issue_tracker.builder.comentario.ComentarioBuilder;
 import com.issue_tracker.issue_tracker.config.CustomUserDetails;
+import com.issue_tracker.issue_tracker.dto.RecuperarComentarios.ComentarioResponse;
 import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NewComentarioRequest;
+import com.issue_tracker.issue_tracker.dto.AgregarNuevoComentario.NewComentarioResponse;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.model.Comentario;
@@ -45,7 +47,7 @@ public class ComentarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/requerimientos/{requerimientoId}")
-    public ResponseEntity<HttpBodyResponse> registrarComentarioEnRequerimiento(
+    public ResponseEntity<HttpBodyResponse> registrarComentario(
         @PathVariable Integer requerimientoId,
         @RequestBody NewComentarioRequest requestBody
     ) {
@@ -70,12 +72,18 @@ public class ComentarioController {
             
             comentarRequerimientoService.comentarRequerimiento(comentario, requerimiento);
 
+            NewComentarioResponse responseBody = new NewComentarioResponse(
+                comentario.getDescripcion(),
+                usuarioEmisor.getNombreUsuario(),
+                comentario.getCreatedAt()
+            );
+
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
             .statusCode(200)
             .message("Se ha registrado el comentario con exito")
-            .data(comentario)
+            .data(responseBody)
             .build();
             
             return ResponseEntity
@@ -99,13 +107,22 @@ public class ComentarioController {
 
         try {
             
-            List<Comentario> listaComentarios = comentarioService.getComentariosByRequerimientoId(requerimientoId);
+            List<Comentario> comentarios = comentarioService.getComentariosByRequerimientoId(requerimientoId);
+
+            List<ComentarioResponse> listaComentarios = comentarios
+            .stream()
+            .map(comentario -> new ComentarioResponse(
+                comentario.getDescripcion(), 
+                comentario.getUsuarioEmisor().getNombreUsuario(),
+                comentario.getCreatedAt()
+            ))
+            .toList();
 
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
             .statusCode(200)
-            .message("Se ha registrado el comentario con exito")
+            .message("Se han encontrador comentarios")
             .data(listaComentarios)
             .build();
             
