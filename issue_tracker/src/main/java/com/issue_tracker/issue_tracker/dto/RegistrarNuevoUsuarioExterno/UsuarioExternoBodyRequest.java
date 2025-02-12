@@ -32,7 +32,7 @@ public class UsuarioExternoBodyRequest {
     @NotBlank(message = "La descripción es obligatoria")
     private String descripcion;
 
-    private Boolean destacadado;
+    private Boolean destacado;
 
     @NotBlank(message = "La empresa es obligatoria")
     private Integer empresaId;

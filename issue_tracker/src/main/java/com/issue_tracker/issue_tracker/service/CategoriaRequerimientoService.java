@@ -13,8 +13,8 @@ public class CategoriaRequerimientoService {
     @Autowired
     private CategoriaRequerimientoRepository categoriaRequerimientoRepository;
     
-    public List<CategoriaRequerimiento> getCategoriasByTipoRequerimiento(Integer tipoRequerimientoId) {
-        return categoriaRequerimientoRepository.findAllByTipoRequerimientoId(tipoRequerimientoId);
+    public List<CategoriaRequerimiento> getCategorias() {
+        return categoriaRequerimientoRepository.findAll();
     }
 
     public CategoriaRequerimiento getCategoriaRequerimientoById(Integer categoriaRequerimientoId) 

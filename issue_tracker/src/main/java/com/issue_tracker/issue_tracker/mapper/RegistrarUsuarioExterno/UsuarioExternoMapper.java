@@ -1,7 +1,9 @@
 package com.issue_tracker.issue_tracker.mapper.RegistrarUsuarioExterno;
 
-import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoBodyResponse;
+import java.time.LocalDateTime;
+
 import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoBodyRequest;
+import com.issue_tracker.issue_tracker.dto.RegistrarNuevoUsuarioExterno.UsuarioExternoBodyResponse;
 import com.issue_tracker.issue_tracker.model.Empresa;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 
@@ -18,8 +20,10 @@ public class UsuarioExternoMapper {
         usuario.setDescripcion(body.getDescripcion());
         usuario.setCuil(body.getCuil());
         usuario.setHashedPassword(body.getPassword());
-        usuario.setDestacado(body.getDestacadado());
+        usuario.setDestacado(body.getDestacado());
         usuario.setEmpresa(empresa);
+        usuario.setCreatedAt(LocalDateTime.now());
+        usuario.setUpdatedAt(LocalDateTime.now());
         
         return usuario;
     }
@@ -31,7 +35,7 @@ public class UsuarioExternoMapper {
         dto.setNombre(usuario.getNombre());
         dto.setApellido(usuario.getApellido());
         dto.setEmail(usuario.getEmail());
-        dto.setDescatado(false);
+        dto.setDestacado(false);
         Empresa empresa = usuario.getEmpresa();
         String nombreEmpresa = empresa.getNombre();
         dto.setEmpresa(nombreEmpresa);

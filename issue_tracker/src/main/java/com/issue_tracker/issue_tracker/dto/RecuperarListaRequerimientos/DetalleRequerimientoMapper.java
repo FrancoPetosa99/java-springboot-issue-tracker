@@ -47,7 +47,7 @@ public class DetalleRequerimientoMapper {
 
             Usuario propietario = requerimientoRelacionado.getUsuarioPropietario();
             if (propietario != null) {
-                String nombreUsuario = usuarioPropietario.getNombreUsuario();
+                String nombreUsuario = propietario.getNombreUsuario();
                 detalle.setUsuarioPropietario(nombreUsuario);
             }
 

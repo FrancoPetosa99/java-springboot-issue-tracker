@@ -10,6 +10,6 @@ public class UsuarioExternoBodyResponse {
     private String apellido;
     private String email;
     private String nombreUsuario;
-    private boolean descatado;
+    private boolean destacado;
     private String empresa;
 }
