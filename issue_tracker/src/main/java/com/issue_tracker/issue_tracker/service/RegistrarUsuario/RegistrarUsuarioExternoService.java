@@ -21,12 +21,12 @@ public class RegistrarUsuarioExternoService extends RegistrarUsuarioService {
         UsuarioExterno usuarioExterno = (UsuarioExterno) usuario;
 
         String email = usuarioExterno.getEmail();
-        boolean existEmail = usuarioExternoRepository.existsByEmail(email);
+        UsuarioExterno existEmail = usuarioExternoRepository.findByEmail(email);
        
         String cuil = usuarioExterno.getCuil();
-        boolean existCUIL = usuarioExternoRepository.existsByCuil(cuil);
+        UsuarioExterno existCUIL = usuarioExternoRepository.findByCuil(cuil);
     
-        if (existEmail || existCUIL) 
+        if (existEmail != null || existCUIL != null) 
             throw new BadRequestException("Ya existe un usuario registrado con estos datos");
 
     }

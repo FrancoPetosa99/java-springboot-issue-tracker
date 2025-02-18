@@ -1,8 +1,11 @@
 package com.issue_tracker.issue_tracker.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +22,7 @@ import com.issue_tracker.issue_tracker.mapper.RegistrarUsuarioInterno.UsuarioInt
 import com.issue_tracker.issue_tracker.model.Empresa;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 import com.issue_tracker.issue_tracker.model.UsuarioInterno;
+import com.issue_tracker.issue_tracker.repository.UsuarioExternoRepository;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.EmpresaService;
@@ -38,6 +42,33 @@ public class UsuarioController {
 
     @Autowired
     private RegistrarUsuarioExternoService registrarUsuarioExternoService;
+
+    @Autowired
+    private UsuarioExternoRepository usuarioExternoRepository;
+
+    @GetMapping("/externo")
+    public ResponseEntity<HttpBodyResponse> getUsuariosExternos() {
+
+        try {
+
+            List<UsuarioExterno> usuarios = usuarioExternoRepository.findAll();
+            
+            HttpBodyResponse response = new HttpBodyResponse
+            .Builder()
+            .status("Success")
+            .statusCode(201)
+            .message("Se han encontrado los usuarios externos")
+            .data(usuarios)
+            .build();
+    
+            return ResponseEntity
+            .status(200)
+            .body(response);
+
+        } catch (Exception e) {
+            return ResponseFactory.internalServerError();
+        }
+    }
 
     @PostMapping("/interno")
     public ResponseEntity<HttpBodyResponse> createNewUsuarioInterno(
