@@ -2,6 +2,7 @@ package com.issue_tracker.issue_tracker.dto.VisualizarRequerimiento;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
@@ -12,7 +13,7 @@ public class VisualizarRequerimientoMapper {
 
         VisualizarRequerimiento dto = new VisualizarRequerimiento();
 
-        String tipo = requerimiento.getTipoRequerimiento().getCodigo();
+        String tipo = requerimiento.getTipoRequerimiento().getDescripcion();
         dto.setTipoRequerimiento(tipo);
 
         String categoria = requerimiento.getCategoriaRequerimiento().getDescripcion();
@@ -47,7 +48,7 @@ public class VisualizarRequerimientoMapper {
 
             Usuario propietario = requerimientoRelacionado.getUsuarioPropietario();
             if (propietario != null) {
-                String nombreUsuario = usuarioPropietario.getNombreUsuario();
+                String nombreUsuario = propietario.getNombreUsuario();
                 detalle.setUsuarioPropietario(nombreUsuario);
             }
 

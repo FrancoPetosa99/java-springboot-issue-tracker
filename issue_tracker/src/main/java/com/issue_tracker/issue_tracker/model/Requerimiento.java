@@ -1,9 +1,12 @@
 package com.issue_tracker.issue_tracker.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -97,6 +100,9 @@ public class Requerimiento {
 
     public void addArchivoAdjunto(ArchivoAdjunto archivo) {
         archivo.setRequerimiento(this);
+        if(this.listaArchivos == null) {
+            this.listaArchivos = new ArrayList<>();
+        }
         this.listaArchivos.add(archivo);
     }
 
@@ -105,10 +111,12 @@ public class Requerimiento {
     }
 
     public void agregarComentario(Comentario comentario) {
+        comentario.setRequerimiento(this);
         this.listaComentarios.add(comentario);
     }
 
     public void addEvento(Evento evento) {
+        evento.setRequerimiento(this);
         this.listaEventos.add(evento);
     }
 }

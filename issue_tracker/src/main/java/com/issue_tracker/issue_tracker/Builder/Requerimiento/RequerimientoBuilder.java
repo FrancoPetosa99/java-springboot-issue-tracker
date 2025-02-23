@@ -3,6 +3,7 @@ package com.issue_tracker.issue_tracker.builder.requerimiento;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.issue_tracker.issue_tracker.model.ArchivoAdjunto;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
@@ -96,12 +97,13 @@ public class RequerimientoBuilder {
         requerimiento.setCategoriaRequerimiento(this.categoriaRequerimiento);
         requerimiento.setUsuarioEmisor(this.usuarioEmisor);
         requerimiento.setUsuarioPropietario(this.usuarioPropietario);
-        requerimiento.setListaArchivos(this.listaArchivosAdjuntos);
         requerimiento.setRequerimientosRelacionados(this.listaRequerimientos);
         requerimiento.setListaEventos(new ArrayList<>());
         requerimiento.setListaComentarios(new ArrayList<>());
         requerimiento.setCreatedAt(LocalDateTime.now());
         requerimiento.setUpdatedAt(LocalDateTime.now());
+        
+        this.listaArchivosAdjuntos.forEach(archivo -> requerimiento.addArchivoAdjunto(archivo));
 
         return requerimiento;
     }

@@ -1,6 +1,7 @@
 package com.issue_tracker.issue_tracker.model;
 
 import java.time.LocalDateTime;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,10 +37,6 @@ public class ArchivoAdjunto {
     @Column(name = "contenido_base64", columnDefinition = "LONGTEXT")
     private String contenido;
     
-    @ManyToOne
-    @JoinColumn(name = "comentario_id")
-    private Comentario comentario;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requerimiento_id", nullable = false)
     private Requerimiento requerimiento;

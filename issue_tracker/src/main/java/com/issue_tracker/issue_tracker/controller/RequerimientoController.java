@@ -3,14 +3,16 @@ package com.issue_tracker.issue_tracker.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.issue_tracker.issue_tracker.config.CustomUserDetails;
+import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoRequest;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoMapper;
 import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.RequerimientoResponse;
@@ -32,8 +37,6 @@ import com.issue_tracker.issue_tracker.exception.BadRequestException;
 import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.exception.NotFoundException;
 import com.issue_tracker.issue_tracker.exception.UnauthorizedException;
-import com.issue_tracker.issue_tracker.config.CustomUserDetails;
-import com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest.NewRequerimientoData;
 import com.issue_tracker.issue_tracker.model.CategoriaRequerimiento;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.TipoRequerimiento;
@@ -41,17 +44,17 @@ import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
-import com.issue_tracker.issue_tracker.service.CategoriaRequerimientoService;
-import com.issue_tracker.issue_tracker.service.EventoService;
-import com.issue_tracker.issue_tracker.service.RequerimientoService;
-import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
-import com.issue_tracker.issue_tracker.service.UsuarioService;
 import com.issue_tracker.issue_tracker.service.AsignarRequerimiento.AsignarRequerimientoService;
+import com.issue_tracker.issue_tracker.service.CategoriaRequerimientoService;
 import com.issue_tracker.issue_tracker.service.CerrarRequerimiento.CerrarRequerimientoService;
 import com.issue_tracker.issue_tracker.service.EnviarEmail.Email;
 import com.issue_tracker.issue_tracker.service.EnviarEmail.EmailBuilder;
 import com.issue_tracker.issue_tracker.service.EnviarEmail.EmailService;
+import com.issue_tracker.issue_tracker.service.EventoService;
 import com.issue_tracker.issue_tracker.service.RegistrarRequerimiento.RegistrarRequerimientoService;
+import com.issue_tracker.issue_tracker.service.RequerimientoService;
+import com.issue_tracker.issue_tracker.service.TipoRequerimientoService;
+import com.issue_tracker.issue_tracker.service.UsuarioService;
 import com.issue_tracker.issue_tracker.service.VisualizarRequerimientos.BuscarRequerimientosService;
 
 @RestController
@@ -89,6 +92,7 @@ public class RequerimientoController {
     private EmailService emailService;
  
     @GetMapping("/")
+    @Transactional
     public ResponseEntity<HttpBodyResponse> getRequerimientos(
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "10") Integer size,
@@ -147,6 +151,7 @@ public class RequerimientoController {
     }
 
     @GetMapping("/{requerimientoId}")
+    @Transactional
     public ResponseEntity<HttpBodyResponse> visualizarDetalleRequerimiento(
         @PathVariable Integer requerimientoId
     ) {

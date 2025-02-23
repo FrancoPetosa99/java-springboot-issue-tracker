@@ -23,6 +23,7 @@ import com.issue_tracker.issue_tracker.model.Empresa;
 import com.issue_tracker.issue_tracker.model.UsuarioExterno;
 import com.issue_tracker.issue_tracker.model.UsuarioInterno;
 import com.issue_tracker.issue_tracker.repository.UsuarioExternoRepository;
+import com.issue_tracker.issue_tracker.repository.UsuarioInternoRepository;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.EmpresaService;
@@ -46,6 +47,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioExternoRepository usuarioExternoRepository;
 
+    @Autowired
+    private UsuarioInternoRepository usuarioInternoRepository;
+
     @GetMapping("/externo")
     public ResponseEntity<HttpBodyResponse> getUsuariosExternos() {
 
@@ -58,6 +62,30 @@ public class UsuarioController {
             .status("Success")
             .statusCode(201)
             .message("Se han encontrado los usuarios externos")
+            .data(usuarios)
+            .build();
+    
+            return ResponseEntity
+            .status(200)
+            .body(response);
+
+        } catch (Exception e) {
+            return ResponseFactory.internalServerError();
+        }
+    }
+
+    @GetMapping("/interno")
+    public ResponseEntity<HttpBodyResponse> getUsuariosInternos() {
+
+        try {
+
+            List<UsuarioInterno> usuarios = usuarioInternoRepository.findAll();
+            
+            HttpBodyResponse response = new HttpBodyResponse
+            .Builder()
+            .status("Success")
+            .statusCode(201)
+            .message("Se han encontrado los usuarios internos")
             .data(usuarios)
             .build();
     
