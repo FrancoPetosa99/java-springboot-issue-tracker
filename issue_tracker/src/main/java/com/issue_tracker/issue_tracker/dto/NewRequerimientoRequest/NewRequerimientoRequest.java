@@ -1,6 +1,8 @@
 package com.issue_tracker.issue_tracker.dto.NewRequerimientoRequest;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -27,7 +29,7 @@ public class NewRequerimientoRequest {
 
     private int usuarioPropietarioId;
 
-    private List<ArchivoAdjuntoData> listaArchivos;
+    private List<ArchivoAdjuntoData> listaArchivos = new ArrayList<>();
 
-    private List<Integer> listaRequerimientosId;
+    private List<Integer> listaRequerimientosId = new ArrayList<>();
 }

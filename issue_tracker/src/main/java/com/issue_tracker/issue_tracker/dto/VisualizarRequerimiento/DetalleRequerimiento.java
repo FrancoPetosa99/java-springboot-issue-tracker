@@ -18,5 +18,6 @@ public class DetalleRequerimiento {
     private String tipoRequerimiento;
     private String categoriaRequerimiento;
     private String usuarioPropietario;
+    private String usuarioEmisor;
     private LocalDateTime createdAt;
 }

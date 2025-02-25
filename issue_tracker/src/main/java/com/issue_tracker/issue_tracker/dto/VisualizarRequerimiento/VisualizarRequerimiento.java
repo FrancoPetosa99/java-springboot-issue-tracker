@@ -20,6 +20,7 @@ public class VisualizarRequerimiento {
     private String tipoRequerimiento;
     private String categoriaRequerimiento;
     private String usuarioPropietario;
+    private String usuarioEmisor;
     private LocalDateTime createdAt;
     private List<DetalleRequerimiento> requerimientosRelacionados = new ArrayList<>();
     private List<DetalleArchivo> listaArchivosAdjuntos = new ArrayList<>();

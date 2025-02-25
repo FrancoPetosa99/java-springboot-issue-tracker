@@ -8,8 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.issue_tracker.issue_tracker.dto.Login.Credentials;
+import com.issue_tracker.issue_tracker.dto.Login.CurrentUser;
 import com.issue_tracker.issue_tracker.dto.LoginRequest;
 import com.issue_tracker.issue_tracker.exception.BadRequestException;
+import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.response.HttpBodyResponse;
 import com.issue_tracker.issue_tracker.response.ResponseFactory;
 import com.issue_tracker.issue_tracker.service.AuthService;
@@ -41,22 +45,33 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<HttpBodyResponse> login(
-        @RequestBody LoginRequest credentials
+        @RequestBody LoginRequest emailAndPassword
     ) {
         
         try {
             
-            String email = credentials.getEmail();
-            String password = credentials.getPassword();
+            String email = emailAndPassword.getEmail();
+            String password = emailAndPassword.getPassword();
             
-            String authToken = authService.login(email, password);
+            Usuario user = authService.login(email, password);
+
+            CurrentUser currentUser = new CurrentUser(
+                user.getId(),
+                user.getNombreUsuario(), 
+                user.getEmail(), 
+                user.getTipo()
+            );
+
+            String authToken = authService.generateToken(user);
+
+            Credentials credentials = new Credentials(authToken, currentUser);
             
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
             .statusCode(200)
             .message("Usuario autenticado con exito")
-            .data(authToken)
+            .data(credentials)
             .build();
     
             return ResponseEntity

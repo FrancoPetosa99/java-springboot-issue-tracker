@@ -109,12 +109,10 @@ public class RequerimientoController {
             Pageable pageable = PageRequest.of(page, size, sort);
             Page<Requerimiento> requerimientos = buscarRequerimientoService.buscarRequerimientos(pageable);
 
-            DetalleRequerimientoMapper mapper = new DetalleRequerimientoMapper();
-
             List<DetalleRequerimiento> requerimientosDetailList = requerimientos
             .getContent()
             .stream()
-            .map(requerimiento -> mapper.mapRequerimientoToDetalle(requerimiento))
+            .map(requerimiento -> DetalleRequerimientoMapper.mapRequerimientoToDetalle(requerimiento))
             .collect(Collectors.toList());
 
             ResponsePagination pagination = new ResponsePagination();
@@ -288,7 +286,10 @@ public class RequerimientoController {
                 return ResponseFactory.badRequest(e.getMessage());
         }   catch (NotFoundException e) {
                 return ResponseFactory.errorNotFound(e.getMessage());
-        } catch (Exception e) {
+        }   catch (ForbiddenException e) {
+                return ResponseFactory.errorForbidden();
+        } 
+            catch (Exception e) {
                 return ResponseFactory.internalServerError();
         }
     }

@@ -14,7 +14,7 @@ public class AuthService {
     @Autowired
     private UsuarioRepository usuarioRepository;
  
-    public String login(String email, String password) 
+    public Usuario login(String email, String password) 
     throws BadRequestException {
 
         Usuario user = usuarioRepository.findByEmail(email);
@@ -24,6 +24,11 @@ public class AuthService {
         String storedPasssword = user.getHashedPassword();
         if (!BCrypt.checkpw(password, storedPasssword)) 
             throw new BadRequestException("Email o Contraseña invalidos");
+
+        return user;
+    }
+
+    public String generateToken(Usuario user) {
 
         String token = JwtToken
         .generateToken()

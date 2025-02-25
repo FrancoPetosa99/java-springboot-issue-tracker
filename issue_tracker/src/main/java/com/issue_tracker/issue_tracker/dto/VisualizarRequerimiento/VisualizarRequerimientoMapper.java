@@ -25,6 +25,10 @@ public class VisualizarRequerimientoMapper {
             dto.setUsuarioPropietario(nombreUsuario);
         }
 
+        Usuario usuarioEmisor = requerimiento.getUsuarioEmisor();
+        String nombreUsuarioEmisor = usuarioEmisor.getNombreUsuario();
+        dto.setUsuarioEmisor(nombreUsuarioEmisor);
+        
         dto.setId(requerimiento.getId());
         dto.setCodigo(requerimiento.getCodigo());
         dto.setAsunto(requerimiento.getAsunto());

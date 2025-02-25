@@ -7,11 +7,12 @@ import com.issue_tracker.issue_tracker.exception.ForbiddenException;
 import com.issue_tracker.issue_tracker.model.Requerimiento;
 import com.issue_tracker.issue_tracker.model.Usuario;
 import com.issue_tracker.issue_tracker.model.UsuarioInterno;
+import com.issue_tracker.issue_tracker.repository.RequerimientoRepository;
 
 public class StateAsignado extends RequerimientoState {
 
-    public StateAsignado(Requerimiento requerimiento) {
-        super(requerimiento);
+    public StateAsignado(Requerimiento requerimiento, RequerimientoRepository requerimientoRepository) {
+        super(requerimiento, requerimientoRepository);
     }
 
     public void asignarNuevoPropietario(UsuarioInterno propietario) 
