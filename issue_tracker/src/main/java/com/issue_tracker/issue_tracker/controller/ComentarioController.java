@@ -28,6 +28,7 @@ import com.issue_tracker.issue_tracker.service.ComentarioService;
 import com.issue_tracker.issue_tracker.service.RequerimientoService;
 import com.issue_tracker.issue_tracker.service.UsuarioService;
 import com.issue_tracker.issue_tracker.service.ComentarRequerimiento.ComentarRequerimientoService;
+import java.util.Comparator;
 
 @RestController
 @RequestMapping("/api/comentarios")
@@ -116,6 +117,7 @@ public class ComentarioController {
                 comentario.getUsuarioEmisor().getNombreUsuario(),
                 comentario.getCreatedAt()
             ))
+            .sorted(Comparator.comparing(ComentarioResponse::getCreatedAt).reversed())
             .toList();
 
             HttpBodyResponse response = new HttpBodyResponse
