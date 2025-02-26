@@ -120,7 +120,9 @@ public class RequerimientoController {
             pagination.setListaRequerimientos(requerimientosDetailList);
             pagination.setPageSize(requerimientos.getSize());
             pagination.setCurrentPage(requerimientos.getPageable().getPageNumber());
-
+            pagination.setTotal(requerimientos.getNumber());
+            pagination.setNextPage(requerimientos.nextPageable());
+            
             HttpBodyResponse response = new HttpBodyResponse
             .Builder()
             .status("Success")
